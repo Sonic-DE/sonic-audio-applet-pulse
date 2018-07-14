@@ -22,6 +22,8 @@
 #define SINK_H
 
 #include "device.h"
+#include <pulse/channelmap.h>
+#include <canberra.h>
 
 namespace QPulseAudio
 {
@@ -31,6 +33,7 @@ class Sink : public Device
     Q_OBJECT
 public:
     explicit Sink(QObject *parent);
+    virtual ~Sink();
 
     void update(const pa_sink_info *info);
     void setVolume(qint64 volume) override;
@@ -40,6 +43,15 @@ public:
 
     bool isDefault() const override;
     void setDefault(bool enable) override;
+
+public slots:
+    void testChannel(const QString &name);
+
+private:
+    pa_channel_position_t channelNameToPosition(const QString &name);
+    QString positionToChannelName(pa_channel_position_t position);
+    QString positionAsString(pa_channel_position_t pos);
+
 };
 
 } // QPulseAudio
