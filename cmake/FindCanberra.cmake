@@ -4,8 +4,10 @@
 #  CANBERRA_FOUND        - true if libcanberra was found
 #  CANBERRA_LIBRARIES    - libcanberra libraries to link against
 #  CANBERRA_INCLUDE_DIRS - include path for libcanberra
+#  CANBERRA_VERSION      - version of libcanberra
 #
 # Copyright (c) 2012 Raphael Kubo da Costa <rakuco@FreeBSD.org>
+# Copyright (c) 2019 Harald Sitter <sitter@kde.org>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -44,7 +46,12 @@ find_path(CANBERRA_INCLUDE_DIRS
     HINTS ${PC_CANBERRA_INCLUDE_DIRS} ${PC_CANBERRA_INCLUDEDIR}
 )
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Canberra REQUIRED_VARS CANBERRA_LIBRARIES CANBERRA_INCLUDE_DIRS)
+set(CANBERRA_VERSION ${PC_CANBERRA_VERSION})
 
-mark_as_advanced(CANBERRA_LIBRARIES CANBERRA_INCLUDE_DIRS)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Canberra
+    REQUIRED_VARS CANBERRA_LIBRARIES CANBERRA_INCLUDE_DIRS
+    VERSION_VAR CANBERRA_VERSION
+)
+
+mark_as_advanced(CANBERRA_LIBRARIES CANBERRA_INCLUDE_DIRS CANBERRA_VERSION)
