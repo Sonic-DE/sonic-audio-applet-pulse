@@ -57,7 +57,7 @@ ColumnLayout {
 
         Label {
             id: soloLabel
-            Layout.maximumWidth: delegate.width - (portbox.visible ? Kirigami.Units.gridUnit + portLabel.implicitWidth + Kirigami.Units.smallSpacing + portbox.implicitWidth : 0)
+            Layout.maximumWidth: delegate.width - (portbox.visible ? Kirigami.Units.gridUnit + portLabel.implicitWidth + Kirigami.Units.smallSpacing + portbox.implicitWidth : 0) - balanceButton.width
             text: defaultButton.text
             visible: delegate.ListView.view.count <= 1
             elide: Text.ElideRight
