@@ -31,6 +31,12 @@ ListItemBase {
     readonly property var activePortIndex: ActivePortIndex
     property bool onlyone: false
 
+    // FIXME: Don't ship this, it's an awful hack
+    // Don't show devices that consist entirely of an unavailable port
+//     readonly property bool uselessDevice: (Ports.length == 1/* && Ports[0] == Port.Unavailable*/)
+//     visible: !uselessDevice
+//     height: uselessDevice ? 0 : implicitHeight
+
     draggable: false
     label: {
         if (currentPort && currentPort.description) {

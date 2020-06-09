@@ -23,6 +23,7 @@
 #define PULSEAUDIO_H
 
 #include <QAbstractListModel>
+#include <QSortFilterProxyModel>
 
 #include "maps.h"
 
@@ -104,6 +105,14 @@ private:
     Sink *findPreferredSink() const;
 
     Sink *m_preferredSink;
+};
+
+class SinkFilteredModel : public QSortFilterProxyModel
+{
+    Q_OBJECT
+public:
+    explicit SinkFilteredModel(QObject *parent = nullptr);
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
 class SinkInputModel : public AbstractModel

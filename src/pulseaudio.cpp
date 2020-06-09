@@ -32,6 +32,7 @@
 #include "module.h"
 
 #include <QMetaEnum>
+#include <QSortFilterProxyModel>
 
 namespace QPulseAudio
 {
@@ -327,6 +328,22 @@ Sink *SinkModel::findPreferredSink() const
 
     // Fallback to default sink
     return defaultSink();
+}
+
+SinkFilteredModel::SinkFilteredModel(QObject *parent)
+    : QSortFilterProxyModel(parent)
+{
+
+}
+
+bool SinkFilteredModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
+{
+    const QModelIndex idx = sourceModel()->index(source_row, 0, source_parent);
+//     auto dataVariant = idx.data(Qt::UserRole + 1 /*FIXME*/);
+//     auto variantValue = dataVariant.value<PulseObject>();
+//     QString name = idx.data(Qt::UserRole + 1 /*FIXME*/).value<PulseObject>()->properties().value(QStringLiteral("name")).toString();
+//     return name.contains(QStringLiteral("sof"));
+    return false;
 }
 
 SourceModel::SourceModel(QObject *parent)
