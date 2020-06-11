@@ -544,7 +544,8 @@ Item {
                                     }
 
                                     // TODO: Make this actually work
-                                    var ports = sourceModel.data(idx, sourceModel.role(PulseObjectRole)).ports;
+                                    var ports = sourceModel.data(idx, sourceModel.role("PulseObject")).ports;
+
                                     if (ports.count === 1 && ports[0].availability == Port.Unavailable) {
                                         return false;
                                     }
