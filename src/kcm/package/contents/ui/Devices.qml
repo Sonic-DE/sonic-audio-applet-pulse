@@ -25,11 +25,53 @@ import QtQuick.Controls 2.3
 
 import org.kde.kirigami 2.5 as Kirigami
 
+import org.kde.plasma.private.volume 0.1
+
 ScrollView {
     id: scrollView
 
     contentHeight: contentItem.height
     clip: true
+
+    PulseObjectFilterModel {
+        id: paSinkFilterModel
+
+        sortRole: "SortByDefault"
+        sortOrder: Qt.DescendingOrder
+        sourceModel: paSinkModel
+
+        filterCallback: function (source_row, parent) {
+            var idx = paSinkModel.index(source_row, 0);
+
+            var ports = paSinkModel.data(idx, paSinkModel.role("PulseObject")).ports;
+
+            if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    PulseObjectFilterModel {
+        id: paSourceFilterModel
+
+        sortRole: "SortByDefault"
+        sortOrder: Qt.DescendingOrder
+        sourceModel: paSourceModel
+
+        filterCallback: function (source_row, parent) {
+            var idx = paSourceModel.index(source_row, 0);
+
+            var ports = paSourceModel.data(idx, paSourceModel.role("PulseObject")).ports;
+
+            if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
+                return false;
+            }
+
+            return true;
+        }
+    }
 
     Item {
     id: contentItem
@@ -54,7 +96,7 @@ ScrollView {
                 Layout.margins: Kirigami.Units.gridUnit / 2
                 interactive: false
                 spacing: Kirigami.Units.gridUnit
-                model: sinkModel
+                model: inactiveDevicesButton.checked ? paSinkModel : paSinkFilterModel
                 delegate: DeviceListItem {
                     isPlayback: true
                 }
@@ -74,10 +116,22 @@ ScrollView {
                 Layout.margins: Kirigami.Units.gridUnit / 2
                 interactive: false
                 spacing: Kirigami.Units.gridUnit
-                model: sourceModel
+                model: inactiveDevicesButton.checked ? paSourceModel : paSourceFilterModel
                 delegate: DeviceListItem {
                     isPlayback: false
                 }
+            }
+
+            Button {
+                id: inactiveDevicesButton
+
+                Layout.alignment: Qt.AlignHCenter
+                Layout.margins: Kirigami.Units.gridUnit
+
+                checkable: true
+
+                text: i18nd("kcm_pulseaudio", "Show Inactive Devices")
+                icon.name: "view-visible"
             }
         }
     }
