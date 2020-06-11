@@ -87,7 +87,7 @@ public:
     enum ItemRole {
         SortByDefaultRole = PulseObjectRole + 1
     };
-    Q_ENUMS(ItemRole)
+    Q_ENUM(ItemRole)
 
     explicit SinkModel(QObject *parent = nullptr);
     Sink *defaultSink() const;
