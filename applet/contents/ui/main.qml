@@ -543,7 +543,6 @@ Item {
                                         return false;
                                     }
 
-                                    // TODO: Make this actually work
                                     var ports = sourceModel.data(idx, sourceModel.role("PulseObject")).ports;
 
                                     if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
@@ -582,6 +581,18 @@ Item {
                                 sortRole: "SortByDefault"
                                 sortOrder: Qt.DescendingOrder
                                 sourceModel: paSourceModel
+
+                                filterCallback: function (source_row, value) {
+                                    var idx = sourceModel.index(source_row, 0);
+
+                                    var ports = sourceModel.data(idx, sourceModel.role("PulseObject")).ports;
+
+                                    if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
+                                        return false;
+                                    }
+
+                                    return true;
+                                }
                             }
                             boundsBehavior: Flickable.StopAtBounds;
                             delegate: DeviceListItem {
