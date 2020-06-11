@@ -537,13 +537,13 @@ Item {
                                 sourceModel: paSinkModel
 
                                 filterCallback: function (source_row, value) {
-                                    var idx = sourceModel.index(source_row, 0);
+                                    var idx = paSinkModel.index(source_row, 0);
 
-                                    if (sourceModel.data(idx, sourceModel.role("Name")) === dummyOutputName) {
+                                    if (paSinkModel.data(idx, paSinkModel.role("Name")) === dummyOutputName) {
                                         return false;
                                     }
 
-                                    var ports = sourceModel.data(idx, sourceModel.role("PulseObject")).ports;
+                                    var ports = paSinkModel.data(idx, paSinkModel.role("PulseObject")).ports;
 
                                     if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
                                         return false;
@@ -583,9 +583,9 @@ Item {
                                 sourceModel: paSourceModel
 
                                 filterCallback: function (source_row, value) {
-                                    var idx = sourceModel.index(source_row, 0);
+                                    var idx = paSourceModel.index(source_row, 0);
 
-                                    var ports = sourceModel.data(idx, sourceModel.role("PulseObject")).ports;
+                                    var ports = paSourceModel.data(idx, paSourceModel.role("PulseObject")).ports;
 
                                     if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
                                         return false;
