@@ -38,19 +38,8 @@ ScrollView {
 
         sortRole: "SortByDefault"
         sortOrder: Qt.DescendingOrder
+        filterOutInactiveDevices: true
         sourceModel: paSinkModel
-
-        filterCallback: function (source_row, parent) {
-            var idx = paSinkModel.index(source_row, 0);
-
-            var ports = paSinkModel.data(idx, paSinkModel.role("PulseObject")).ports;
-
-            if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
-                return false;
-            }
-
-            return true;
-        }
     }
 
     PulseObjectFilterModel {
@@ -58,19 +47,8 @@ ScrollView {
 
         sortRole: "SortByDefault"
         sortOrder: Qt.DescendingOrder
+        filterOutInactiveDevices: true
         sourceModel: paSourceModel
-
-        filterCallback: function (source_row, parent) {
-            var idx = paSourceModel.index(source_row, 0);
-
-            var ports = paSourceModel.data(idx, paSourceModel.role("PulseObject")).ports;
-
-            if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
-                return false;
-            }
-
-            return true;
-        }
     }
 
     Item {
