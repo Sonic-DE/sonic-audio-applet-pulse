@@ -122,7 +122,7 @@ public:
     enum ItemRole {
         SortByDefaultRole = PulseObjectRole + 1
     };
-    Q_ENUMS(ItemRole)
+    Q_ENUM(ItemRole)
 
     explicit SourceModel(QObject *parent = nullptr);
     Source *defaultSource() const;
