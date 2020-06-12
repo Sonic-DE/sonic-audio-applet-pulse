@@ -531,26 +531,11 @@ Item {
                             Layout.maximumHeight: contentHeight
                             spacing: 0
 
-                            model: PlasmaCore.SortFilterModel {
+                            model: PulseObjectFilterModel {
                                 sortRole: "SortByDefault"
                                 sortOrder: Qt.DescendingOrder
+                                filterOutInactiveDevices: true
                                 sourceModel: paSinkModel
-
-                                filterCallback: function (source_row, value) {
-                                    var idx = paSinkModel.index(source_row, 0);
-
-                                    if (paSinkModel.data(idx, paSinkModel.role("Name")) === dummyOutputName) {
-                                        return false;
-                                    }
-
-                                    var ports = paSinkModel.data(idx, paSinkModel.role("PulseObject")).ports;
-
-                                    if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
-                                        return false;
-                                    }
-
-                                    return true;
-                                }
                             }
                             boundsBehavior: Flickable.StopAtBounds;
                             delegate: DeviceListItem {
@@ -580,19 +565,8 @@ Item {
                             model: PulseObjectFilterModel {
                                 sortRole: "SortByDefault"
                                 sortOrder: Qt.DescendingOrder
+                                filterOutInactiveDevices: true
                                 sourceModel: paSourceModel
-
-                                filterCallback: function (source_row, value) {
-                                    var idx = paSourceModel.index(source_row, 0);
-
-                                    var ports = paSourceModel.data(idx, paSourceModel.role("PulseObject")).ports;
-
-                                    if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
-                                        return false;
-                                    }
-
-                                    return true;
-                                }
                             }
                             boundsBehavior: Flickable.StopAtBounds;
                             delegate: DeviceListItem {
