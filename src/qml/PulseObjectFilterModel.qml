@@ -28,7 +28,6 @@ PlasmaCore.SortFilterModel {
         // Optionally exclude inactive devices
         if (filterOutInactiveDevices) {
             var ports = sourceModel.data(idx, sourceModel.role("PulseObject")).ports;
-            console.warn(ports)
             if (ports.length === 1 && ports[0].availability == Port.Unavailable) {
                 return false;
             }
