@@ -37,7 +37,7 @@ public:
     enum ItemRole {
         PulseObjectRole = Qt::UserRole + 1
     };
-    Q_ENUMS(ItemRole)
+    Q_ENUM(ItemRole)
 
     ~AbstractModel() override;
     QHash<int, QByteArray> roleNames() const final;
