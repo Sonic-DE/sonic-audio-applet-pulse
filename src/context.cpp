@@ -36,6 +36,7 @@
 #include "sourceoutput.h"
 #include "streamrestore.h"
 #include "module.h"
+#include "qtpamainloop.h"
 
 namespace QPulseAudio
 {
@@ -249,7 +250,6 @@ Context::~Context()
     }
 
     if (m_mainloop) {
-        pa_glib_mainloop_free(m_mainloop);
         m_mainloop = nullptr;
     }
 
@@ -595,29 +595,22 @@ void Context::connectToDaemon()
         return;
     }
 
-    // We require a glib event loop
-    if (!QByteArray(QAbstractEventDispatcher::instance()->metaObject()->className()).contains("EventDispatcherGlib") &&
-        !QByteArray(QAbstractEventDispatcher::instance()->metaObject()->className()).contains("GlibEventDispatcher")) {
-        qCWarning(PLASMAPA) << "Disabling PulseAudio integration for lack of GLib event loop";
-        return;
-    }
-
     qCDebug(PLASMAPA) <<  "Attempting connection to PulseAudio sound daemon";
     if (!m_mainloop) {
-        m_mainloop = pa_glib_mainloop_new(nullptr);
+        m_mainloop.reset(new QtPaMainLoop);
+        // For whenever we require a newer C++ version
+        //m_mainloop = std::make_unique<QtPaMainLoop>();
         Q_ASSERT(m_mainloop);
     }
 
-    pa_mainloop_api *api = pa_glib_mainloop_get_api(m_mainloop);
-    Q_ASSERT(api);
-    m_context = pa_context_new(api, "QPulse");
+    m_context = pa_context_new(&m_mainloop->pa_vtable, "QPulse");
     Q_ASSERT(m_context);
 
     if (pa_context_connect(m_context, nullptr, PA_CONTEXT_NOFAIL, nullptr) < 0) {
         pa_context_unref(m_context);
-        pa_glib_mainloop_free(m_mainloop);
         m_context = nullptr;
-        m_mainloop = nullptr;
+        m_context = nullptr;
+        m_mainloop.reset();
         return;
     }
     pa_context_set_state_callback(m_context, &context_state_callback, this);

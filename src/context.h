@@ -27,11 +27,14 @@
 
 #include <pulse/mainloop.h>
 #include <pulse/pulseaudio.h>
-#include <pulse/glib-mainloop.h>
 #include <pulse/ext-stream-restore.h>
 
 #include "maps.h"
 #include "operation.h"
+
+#include <memory>
+
+struct QtPaMainLoop;
 
 namespace QPulseAudio
 {
@@ -192,7 +195,7 @@ private:
     Server *m_server;
 
     pa_context *m_context;
-    pa_glib_mainloop *m_mainloop;
+    std::unique_ptr<QtPaMainLoop> m_mainloop;
 
     QString m_newDefaultSink;
     QString m_newDefaultSource;
