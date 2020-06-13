@@ -110,6 +110,9 @@ ScrollView {
 
                 text: i18nd("kcm_pulseaudio", "Show Inactive Devices")
                 icon.name: "view-visible"
+
+                // Only show if there actually are any inactive devices
+                visible: (paSourceModel.rowCount != paSourceFilterModel.rowCount) || (paSinkModel.rowCount != paSinkFilterModel.rowCount)
             }
         }
     }
