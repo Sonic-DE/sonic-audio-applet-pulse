@@ -470,6 +470,9 @@ void Context::sourceCallback(const pa_source_info *info)
 
 void Context::sourceOutputCallback(const pa_source_output_info *info)
 {
+    if (!qstrcmp(info->name, "PlasmaPA-Internal-PeakDetect")){
+        return;
+    }
     m_sourceOutputs.updateEntry(info, this);
 }
 

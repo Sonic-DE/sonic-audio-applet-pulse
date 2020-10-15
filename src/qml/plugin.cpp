@@ -30,6 +30,7 @@
 #include "modulemanager.h"
 #include "profile.h"
 #include "port.h"
+#include "volumemonitor.h"
 
 #include "globalactioncollection.h"
 #include "microphoneindicator.h"
@@ -57,6 +58,7 @@ void Plugin::registerTypes(const char* uri)
     qmlRegisterType<QPulseAudio::SourceOutputModel>(uri, 0, 1, "SourceOutputModel");
     qmlRegisterType<QPulseAudio::StreamRestoreModel>(uri, 0, 1, "StreamRestoreModel");
     qmlRegisterType<QPulseAudio::ModuleModel>(uri, 0, 1, "ModuleModel");
+    qmlRegisterType<QPulseAudio::VolumeMonitor>(uri, 0, 01, "VolumeMonitor");
     qmlRegisterUncreatableType<QPulseAudio::Profile>(uri, 0, 1, "Profile", QString());
     qmlRegisterUncreatableType<QPulseAudio::Port>(uri, 0, 1, "Port", QString());
     qmlRegisterType<GlobalAction>(uri, 0, 1, "GlobalAction");
