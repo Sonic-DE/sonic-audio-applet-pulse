@@ -95,6 +95,20 @@ ColumnLayout {
                     }
                 }
             }
+            ProgressBar {
+                Layout.fillWidth: true
+                value: meter.volume
+                StreamMeter {
+                    id: meter
+                    sourceIndex: SourceIndex
+                    streamIndex: StreamIndex
+                    Component.onCompleted: {
+                        meter.createStream();
+                    }
+                }
+            }
+
+
         }
     }
 

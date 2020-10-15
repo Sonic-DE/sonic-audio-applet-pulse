@@ -169,6 +169,20 @@ ColumnLayout {
                 }
             }
 
+            ProgressBar {
+                Layout.fillWidth: true
+                Layout.columnSpan: 2
+
+                value: meter.volume
+                StreamMeter {
+                    id: meter
+                    sourceIndex: SourceIndex
+                    Component.onCompleted: {
+                        meter.createStream();
+                    }
+                }
+            }
+
             Repeater {
                 model: balanceButton.checked ? Channels : null
 

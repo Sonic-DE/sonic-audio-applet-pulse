@@ -31,6 +31,7 @@ namespace QPulseAudio
 class VolumeObject : public PulseObject
 {
     Q_OBJECT
+
     Q_PROPERTY(qint64 volume READ volume WRITE setVolume NOTIFY volumeChanged)
     Q_PROPERTY(bool muted READ isMuted WRITE setMuted NOTIFY mutedChanged)
     Q_PROPERTY(bool hasVolume READ hasVolume NOTIFY hasVolumeChanged)
@@ -38,6 +39,10 @@ class VolumeObject : public PulseObject
     Q_PROPERTY(QStringList channels READ channels NOTIFY channelsChanged)
     Q_PROPERTY(QStringList rawChannels READ rawChannels NOTIFY rawChannelsChanged)
     Q_PROPERTY(QVector<qint64> channelVolumes READ channelVolumes WRITE setChannelVolumes NOTIFY channelVolumesChanged)
+
+    Q_PROPERTY(qint64 sourceIndex READ sourceIndex NOTIFY sourceIndexChanged)
+    Q_PROPERTY(qint64 streamIndex READ streamIndex NOTIFY streamIndexChanged)
+
 public:
     explicit VolumeObject(QObject *parent);
     ~VolumeObject() override;
@@ -92,6 +97,9 @@ public:
     virtual void setChannelVolumes(const QVector<qint64> &channelVolumes) = 0;
     Q_INVOKABLE virtual void setChannelVolume(int channel, qint64 volume) = 0;
 
+    virtual quint32 sourceIndex() const {qDebug() << "querying base class " << this; return -1;};
+    virtual quint32 streamIndex() const {return -1;};
+
 Q_SIGNALS:
     void volumeChanged();
     void mutedChanged();
@@ -100,10 +108,12 @@ Q_SIGNALS:
     void channelsChanged();
     void rawChannelsChanged();
     void channelVolumesChanged();
+    void sourceIndexChanged();
+    void streamIndexChanged();
 
 protected:
     pa_cvolume cvolume() const;
-
+    uint32_t m_source;
     pa_cvolume m_volume;
     bool m_muted;
     bool m_hasVolume;

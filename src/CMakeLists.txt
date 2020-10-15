@@ -22,6 +22,7 @@ set(cpp_SRCS
     volumeobject.cpp
     debug.cpp
     server.cpp
+    streammeter.cpp
     streamrestore.cpp
     module.cpp
     canberracontext.cpp
