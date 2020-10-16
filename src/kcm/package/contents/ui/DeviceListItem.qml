@@ -153,7 +153,7 @@ ColumnLayout {
         }
 
         GridLayout {
-            rows: Math.max(1, channelSliderRepeater.count)
+            rows: Math.max(1, channelSliderRepeater.count) + (volumeFeedback.visible ? 1: 0)
             flow: GridLayout.TopToBottom
 
             VolumeSlider {
@@ -166,6 +166,20 @@ ColumnLayout {
                 onMoved: {
                     Volume = value;
                     Muted = (value === 0);
+                }
+            }
+
+            ProgressBar {
+                id: volumeFeedback
+                Layout.fillWidth: true
+                Layout.columnSpan: 2
+
+                value: meter.volume
+                visible: meter.available
+
+                VolumeMonitor {
+                    id: meter
+                    target: PulseObject
                 }
             }
 
