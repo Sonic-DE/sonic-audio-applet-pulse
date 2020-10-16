@@ -95,6 +95,18 @@ ColumnLayout {
                     }
                 }
             }
+            ProgressBar {
+                Layout.fillWidth: true
+                value: meter.volume
+                visible: meter.available
+                VolumeMonitor {
+                    id: meter
+                    sourceIndex: SourceIndex
+                    streamIndex: Index
+                }
+            }
+
+
         }
     }
 
