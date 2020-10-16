@@ -95,6 +95,17 @@ ColumnLayout {
                     }
                 }
             }
+            ProgressBar {
+                Layout.fillWidth: true
+                value: meter.volume
+                visible: meter.available
+                VolumeMonitor {
+                    id: meter
+                    target: PulseObject
+                }
+            }
+
+
         }
     }
 
