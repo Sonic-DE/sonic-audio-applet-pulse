@@ -226,15 +226,16 @@ PlasmaComponents.ListItem {
                                 y: (parent.height - height) / 2
                                 width: Math.max(margins.left + margins.right, slider.handle.x * meter.volume)
                                 height: Math.max(margins.top + margins.bottom, parent.height)
-                                opacity: meter.available && meter.volume > 0
+                                opacity: meter.available && (meter.volume > 0 || animation.running)
                                 VolumeMonitor {
                                     id: meter
-                                    target: PulseObject
+                                    target: parent.visible ? PulseObject : null
                                 }
                                 Behavior on width {
                                     NumberAnimation  {
+                                        id: animation
                                         duration: PlasmaCore.Units.shortDuration
-                                        easing.type: Easing.InOutQuad
+                                        easing.type: Easing.OutQuad
                                     }
                                 }
                             }
