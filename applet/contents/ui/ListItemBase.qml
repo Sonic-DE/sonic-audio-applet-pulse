@@ -22,6 +22,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
+import QtGraphicalEffects 1.15
 
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.plasma.components 2.0 as PlasmaComponents // for contextMenu and ListItem
@@ -251,6 +252,30 @@ PlasmaComponents.ListItem {
                             id: updateTimer
                             interval: 200
                             onTriggered: slider.value = Volume
+                        }
+
+                        PlasmaCore.FrameSvgItem {
+                                id: volumeFeedback
+                                imagePath: "widgets/slider"
+                                prefix: "groove-highlight"
+                                anchors {
+                                    left: slider.left
+                                    verticalCenter: slider.verticalCenter
+                                }
+                                width: Math.max(margins.left + margins.right, slider.background.width * meter.volume *  slider.visualPosition  - slider.handle.width / 2)
+                                height: Math.max(margins.top + margins.bottom, slider.background.height)
+                                visible: meter.available && meter.volume > 0
+
+                            VolumeMonitor {
+                                id: meter
+                                target: PulseObject
+                            }
+                        }
+                        ColorOverlay {
+                            anchors.fill: volumeFeedback
+                            source: volumeFeedback
+                            visible: volumeFeedback.visible
+                            color: Qt.hsla(PlasmaCore.Theme.highlightColor.hslHue + 0.05 % 1, 1, PlasmaCore.Theme.highlightColor.hslLightness, 1)  // 30 degree
                         }
                     }
                     PlasmaComponents3.Label {
