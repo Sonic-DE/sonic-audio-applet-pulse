@@ -27,6 +27,12 @@
 
 #include <KLocalizedString>
 #include <KStatusNotifierItem>
+<<<<<<< Updated upstream
+=======
+#include <Plasma/Applet>
+#include <Plasma/Containment>
+#include <PlasmaQuick/AppletQuickItem>
+>>>>>>> Stashed changes
 
 #include "client.h"
 #include "context.h"
@@ -62,7 +68,16 @@ MicrophoneIndicator::~MicrophoneIndicator() = default;
 
 void MicrophoneIndicator::init()
 {
+<<<<<<< Updated upstream
     // does nothing, just prompts QML engine to create an instance of the singleton
+=======
+    m_applets.push_back(item);
+    qDebug() << item->applet()->location() << item->applet()->containment() << item->applet()->containment()->containmentType();
+//     if (item->applet()->location() == Plasma::Types::Pan) {
+        connect(item, &PlasmaQuick::AppletQuickItem::destroyed, this, [this, item] {
+        m_applets.removeAll(item);
+    });
+>>>>>>> Stashed changes
 }
 
 void MicrophoneIndicator::scheduleUpdate()
