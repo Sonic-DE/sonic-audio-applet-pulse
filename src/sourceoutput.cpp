@@ -64,4 +64,9 @@ void SourceOutput::setChannelVolumes(const QVector<qint64> &channelVolumes)
     context()->setGenericVolumes(index(), channelVolumes, cvolume(), &pa_context_set_source_output_volume);
 }
 
+quint32 SourceOutput::sourceIndex() const
+{
+    return m_deviceIndex;
+}
+
 } // QPulseAudio
