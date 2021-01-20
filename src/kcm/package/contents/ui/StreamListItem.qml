@@ -41,7 +41,7 @@ ColumnLayout {
 
         Kirigami.Icon {
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredHeight: delegateColumn.height * 0.75
+            Layout.preferredHeight: Kirigami.Units.iconSizes.large
             Layout.preferredWidth: Layout.preferredHeight
             source: IconName || "unknown"
         }
