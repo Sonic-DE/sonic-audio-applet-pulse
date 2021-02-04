@@ -115,6 +115,9 @@ void MicrophoneIndicator::update()
 
         m_muteAction = menu->addAction(QIcon::fromTheme(QStringLiteral("microphone-sensitivity-muted")), i18n("Mute"));
         m_muteAction->setCheckable(true);
+        connect(m_sni, &KStatusNotifierItem::activateRequested, this, [this]() {
+            setMuted(!muted());
+        });
         connect(m_muteAction.data(), &QAction::triggered, this, &MicrophoneIndicator::setMuted);
 
         // don't let it quit plasmashell
