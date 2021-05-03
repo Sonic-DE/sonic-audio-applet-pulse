@@ -358,12 +358,12 @@ Item {
         GlobalAction {
             objectName: "mute"
             text: i18n("Mute")
-            shortcut: Qt.Key_VolumeMute
             onTriggered: muteVolume()
         }
         GlobalAction {
             objectName: "globalMute"
             text: i18n("Mute All")
+            shortcut: Qt.Key_VolumeMute
             onTriggered: globalMuteVolume()
         }
         GlobalAction {
