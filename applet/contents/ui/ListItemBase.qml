@@ -59,6 +59,18 @@ PlasmaComponents.ListItem {
                     }
                 }
 
+                PlasmaCore.IconItem {
+                    anchors {
+                        right: parent.right
+                        bottom: parent.bottom
+                        margins: PlasmaCore.Units.smallSpacing
+                    }
+                    width: PlasmaCore.Units.iconSizes.small
+                    height: width
+                    source: type === "sink-input" || type === "source-output" ? "media-playback-paused" : ""
+                    visible: valid && Corked
+                }
+
                 DragAndDrop.DragArea {
                     id: dragArea
                     anchors.fill: parent
