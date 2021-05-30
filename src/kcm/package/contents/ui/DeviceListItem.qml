@@ -185,4 +185,10 @@ ColumnLayout {
             }
         }
     }
+
+    Kirigami.Separator {
+        visible: (delegate.ListView.view.count != 0) && (delegate.ListView.view.count != (index + 1))
+        Layout.topMargin: delegate.ListView.view.spacing - delegate.spacing
+        Layout.fillWidth: true
+    }
 }
