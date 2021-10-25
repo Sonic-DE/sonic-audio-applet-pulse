@@ -283,6 +283,10 @@ Item {
         active: mouseArea.containsMouse
         colorGroup: PlasmaCore.ColorScope.colorGroup
 
+        Plasmoid.onActivated: {
+            plasmoid.expanded = !plasmoid.expanded
+        }
+
         MouseArea {
             id: mouseArea
 
