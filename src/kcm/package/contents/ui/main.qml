@@ -274,6 +274,9 @@ ScrollViewKCM {
         property string iconName: "audio-card"
         property string profile: ""
         property string port: ""
+        property var tester: SpeakerTest {
+            sink: testOverlay.sinkObject
+        }
 
         function testSink(index) {
             let modelIndex = sinks.model.index(Math.max(index, 0), 0);
@@ -365,7 +368,7 @@ ScrollViewKCM {
                     Layout.preferredWidth: Kirigami.Units.gridUnit * 10
                     Layout.preferredHeight: Kirigami.Units.gridUnit * 2
                     // there is no subwoofer sound in the freedesktop theme https://gitlab.freedesktop.org/xdg/xdg-sound-theme/-/issues/7
-                    onClicked: testOverlay.sinkObject.testChannel(modelData === "lfe" ? "rear-center" : modelData)
+                    onClicked: testOverlay.tester.testChannel(modelData === "lfe" ? "rear-center" : modelData)
                 }
             }
         }
