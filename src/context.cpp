@@ -28,6 +28,7 @@
 namespace QPulseAudio
 {
 Context *Context::s_context = nullptr;
+QString Context::s_applicationId;
 
 const qint64 Context::NormalVolume = PA_VOLUME_NORM;
 const qint64 Context::MinimalVolume = 0;
@@ -586,7 +587,7 @@ void Context::connectToDaemon()
 
     pa_proplist *proplist = pa_proplist_new();
     pa_proplist_sets(proplist, PA_PROP_APPLICATION_NAME, i18nc("Name shown in debug pulseaudio tools", "Plasma PA").toUtf8().constData());
-    pa_proplist_sets(proplist, PA_PROP_APPLICATION_ID, "org.kde.plasma-pa");
+    pa_proplist_sets(proplist, PA_PROP_APPLICATION_ID, s_applicationId.toUtf8().constData());
     pa_proplist_sets(proplist, PA_PROP_APPLICATION_ICON_NAME, "audio-card");
     m_context = pa_context_new_with_proplist(api, nullptr, proplist);
     pa_proplist_free(proplist);
@@ -613,6 +614,11 @@ void Context::reset()
     m_modules.reset();
     m_streamRestores.reset();
     m_server->reset();
+}
+
+void Context::setApplicationId(const QString &applicationId)
+{
+    s_applicationId = applicationId;
 }
 
 } // QPulseAudio
