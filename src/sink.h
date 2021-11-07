@@ -32,7 +32,7 @@ public:
 
     void switchStreams() override;
 
-    quint32 sourceIndex() const override;
+    quint32 monitorIndex() const;
 
 public Q_SLOTS:
     void testChannel(const QString &name);

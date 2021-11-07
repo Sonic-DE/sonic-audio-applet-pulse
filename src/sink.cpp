@@ -121,7 +121,7 @@ void Sink::switchStreams()
     });
 }
 
-quint32 Sink::sourceIndex() const
+quint32 Sink::monitorIndex() const
 {
     return m_sourceIndex;
 }
