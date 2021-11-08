@@ -661,7 +661,7 @@ Item {
 
         footer: PlasmaExtras.PlasmoidHeading {
             height: parent.header.height
-            location: PlasmaExtras.PlasmoidHeading.Location.Footer
+            position: PlasmaExtras.PlasmoidHeading.Location.Footer
             PC3.CheckBox {
                 id: raiseMaximumVolumeCheckbox
                 anchors.left: parent.left
