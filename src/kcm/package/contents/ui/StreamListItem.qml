@@ -35,9 +35,9 @@ ColumnLayout {
                 }
 
                 if (delegate.isPlayback) {
-                    return "audio-volume-high"
+                    return "audio-speakers-symbolic"
                 } else {
-                    return "audio-input-microphone"
+                    return "audio-input-microphone-symbolic"
                 }
             }
         }
