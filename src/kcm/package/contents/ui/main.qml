@@ -338,6 +338,8 @@ ScrollViewKCM {
         GridLayout {
             id: layoutTest
             columns: 3
+            rowSpacing: Kirigami.Units.gridUnit
+
             LayoutMirroring.enabled: false  // To preserve spacial layout on RTL
 
             Kirigami.Avatar {
@@ -345,8 +347,9 @@ ScrollViewKCM {
                     id: kuser
                 }
                 source: kuser.faceIconUrl
-                sourceSize.width: Kirigami.Units.gridUnit * 3
-                sourceSize.height: Kirigami.Units.gridUnit * 3
+                implicitWidth: Kirigami.Units.gridUnit * 4
+                implicitHeight: Kirigami.Units.gridUnit * 4
+
                 Layout.row: 1
                 Layout.column: 1
                 Layout.alignment: Qt.AlignCenter
@@ -361,18 +364,33 @@ ScrollViewKCM {
             Repeater {
                 model: testOverlay.sinkObject && testOverlay.sinkObject.rawChannels
 
-                delegate: Button {
+                delegate: ToolButton {
                     text: testOverlay.channelData(modelData).text
+
+                    icon.name: "audio-speakers-symbolic"
+                    icon.width: Kirigami.Units.iconSizes.medium
+                    icon.height: Kirigami.Units.iconSizes.medium
+                    display: AbstractButton.TextUnderIcon
+
                     Layout.row: testOverlay.channelData(modelData).row
                     Layout.column: testOverlay.channelData(modelData).column
                     Layout.alignment: Qt.AlignCenter
                     Layout.fillWidth: true
-                    Layout.preferredWidth: Kirigami.Units.gridUnit * 10
-                    Layout.preferredHeight: Kirigami.Units.gridUnit * 2
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 8
                     // there is no subwoofer sound in the freedesktop theme https://gitlab.freedesktop.org/xdg/xdg-sound-theme/-/issues/7
                     onClicked: tester.testChannel(modelData === "lfe" ? "rear-center" : modelData)
                 }
             }
+
+            Label {
+                text: i18nd("kcm_pulseaudio", "Click on any speaker to test sound")
+                font: Kirigami.Theme.smallFont
+
+                Layout.row: 3
+                Layout.columnSpan: 3
+                Layout.alignment: Qt.AlignCenter
+            }
+
         }
     }
 }
