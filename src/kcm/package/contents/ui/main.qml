@@ -368,6 +368,7 @@ ScrollViewKCM {
                     text: testOverlay.channelData(modelData).text
 
                     icon.name: "audio-speakers-symbolic"
+                    icon.color: tester.playingChannels.includes(modelData) ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
                     icon.width: Kirigami.Units.iconSizes.medium
                     icon.height: Kirigami.Units.iconSizes.medium
                     display: AbstractButton.TextUnderIcon
@@ -377,6 +378,7 @@ ScrollViewKCM {
                     Layout.alignment: Qt.AlignCenter
                     Layout.fillWidth: true
                     Layout.preferredWidth: Kirigami.Units.gridUnit * 8
+
                     // there is no subwoofer sound in the freedesktop theme https://gitlab.freedesktop.org/xdg/xdg-sound-theme/-/issues/7
                     onClicked: tester.testChannel(modelData === "lfe" ? "rear-center" : modelData)
                 }
