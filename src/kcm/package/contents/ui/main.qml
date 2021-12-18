@@ -374,8 +374,9 @@ ScrollViewKCM {
                     Layout.column: channelData.column
                     Layout.alignment: Qt.AlignCenter
                     Layout.fillWidth: true
+                    Layout.fillHeight: true
                     Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                    Layout.preferredHeight: Kirigami.Units.gridUnit * 4
+                    Layout.minimumHeight: Kirigami.Units.gridUnit * 4
 
                     contentItem: ColumnLayout {
                         anchors.fill: parent
@@ -392,7 +393,12 @@ ScrollViewKCM {
                         Text {
                             text: channelData.text
                             color: isPlaying ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
-                            Layout.alignment: Qt.AlignCenter
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.margins: Kirigami.Units.smallSpacing
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            wrapMode: Text.WordWrap
                         }
                     }
 
