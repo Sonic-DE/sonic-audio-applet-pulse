@@ -408,9 +408,10 @@ Item {
         imagePath: "widgets/line"
     }
 
-    Plasmoid.fullRepresentation: PC3.Page {
+    Plasmoid.fullRepresentation: PlasmaExtras.Representation {
         Layout.preferredHeight: main.Layout.preferredHeight
         Layout.preferredWidth: main.Layout.preferredWidth
+        collapseMarginsHint: true
 
         function beginMoveStream(type, stream) {
             if (type === "sink") {
@@ -511,15 +512,15 @@ Item {
             }
         }
 
-        PlasmaExtras.ScrollArea {
+        PC3.ScrollView {
             id: scrollView
 
             anchors.fill: parent
 
-            horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
-            flickableItem.boundsBehavior: Flickable.StopAtBounds;
+            // HACK: workaround for https://bugreports.qt.io/browse/QTBUG-83890
+            PC3.ScrollBar.horizontal.policy: PC3.ScrollBar.AlwaysOff
 
-            //our scroll isn't a list of delegates, all internal items are tab focussable, making this redundant
+            // our scroll isn't a list of delegates, all internal items are tab focussable, making this redundant
             activeFocusOnTab: false
 
             Item {
@@ -530,7 +531,7 @@ Item {
                     id: streamsView
                     spacing: 0
                     visible: tabBar.currentItem === streamsTab
-                    property int maximumWidth: scrollView.viewport.width
+                    property int maximumWidth: scrollView.availableWidth
                     width: maximumWidth
                     Layout.maximumWidth: maximumWidth
 
@@ -540,14 +541,16 @@ Item {
                         Layout.fillWidth: true
                         Layout.minimumHeight: contentHeight
                         Layout.maximumHeight: contentHeight
+                        topMargin: PlasmaCore.Units.smallSpacing * 2
+                        spacing: PlasmaCore.Units.smallSpacing
+
 
                         model: PulseObjectFilterModel {
                             filters: [ { role: "VirtualStream", value: false } ]
                             sourceModel: SinkInputModel {}
                         }
-                        boundsBehavior: Flickable.StopAtBounds;
                         delegate: StreamListItem {
-                            width: sinkInputView.width
+                            width: sinkInputView.width - (scrollView.PC3.ScrollBar.vertical.visible ? PlasmaCore.Units.smallSpacing * 4 : 0)
                             type: "sink-input"
                             devicesModel: sinkView.model
                             draggable: sinkView.count > 1
@@ -572,13 +575,15 @@ Item {
                         Layout.minimumHeight: contentHeight
                         Layout.maximumHeight: contentHeight
 
+                        bottomMargin: PlasmaCore.Units.smallSpacing * 2
+                        spacing: PlasmaCore.Units.smallSpacing
+
                         model: PulseObjectFilterModel {
                             filters: [ { role: "VirtualStream", value: false } ]
                             sourceModel: SourceOutputModel {}
                         }
-                        boundsBehavior: Flickable.StopAtBounds;
                         delegate: StreamListItem {
-                            width: sourceOutputView.width
+                            width: sourceOutputView.width - (scrollView.PC3.ScrollBar.vertical.visible ? PlasmaCore.Units.smallSpacing * 4 : 0)
                             type: "source-output"
                             devicesModel: sourceView.model
                             draggable: sourceView.count > 1
@@ -589,7 +594,7 @@ Item {
                 ColumnLayout {
                     id: devicesView
                     visible: tabBar.currentItem === devicesTab
-                    property int maximumWidth: scrollView.viewport.width
+                    property int maximumWidth: scrollView.availableWidth
                     width: maximumWidth
                     Layout.maximumWidth: maximumWidth
                     spacing: 0
@@ -600,13 +605,14 @@ Item {
                         Layout.fillWidth: true
                         Layout.minimumHeight: contentHeight
                         Layout.maximumHeight: contentHeight
-                        spacing: 0
+                        topMargin: PlasmaCore.Units.smallSpacing * 2
+                        spacing: PlasmaCore.Units.smallSpacing
 
                         model: paSinkFilterModel
 
                         boundsBehavior: Flickable.StopAtBounds;
                         delegate: DeviceListItem {
-                            width: sinkView.width
+                            width: sinkView.width - (scrollView.PC3.ScrollBar.vertical.visible ? PlasmaCore.Units.smallSpacing * 4 : 0)
                             type: "sink"
                             onlyone: sinkView.count === 1
                         }
@@ -631,10 +637,12 @@ Item {
                         Layout.maximumHeight: contentHeight
 
                         model: paSourceFilterModel
+                        bottomMargin: PlasmaCore.Units.smallSpacing * 2
+                        spacing: PlasmaCore.Units.smallSpacing
 
                         boundsBehavior: Flickable.StopAtBounds;
                         delegate: DeviceListItem {
-                            width: sourceView.width
+                            width: sourceView.width - (scrollView.PC3.ScrollBar.vertical.visible ? PlasmaCore.Units.smallSpacing * 4 : 0)
                             type: "source"
                             onlyone: sourceView.count === 1
                         }
