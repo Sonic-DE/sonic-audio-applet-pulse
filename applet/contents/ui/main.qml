@@ -4,8 +4,8 @@
     SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 */
 
-import QtQuick 2.2
-import QtQuick.Layouts 1.0
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
 
 import org.kde.plasma.core 2.1 as PlasmaCore
 import org.kde.plasma.components 3.0 as PC3
@@ -491,6 +491,34 @@ Item {
                     PC3.TabButton {
                         id: streamsTab
                         text: i18n("Applications")
+                    }
+
+                    // We need an Item over everything because TabButtons block
+                    // wheel events from reaching the TabBar.
+                    Item {
+                        parent: tabBar // not in the contentItem
+                        z: 1
+                        anchors.fill: parent
+                        WheelHandler {
+                            orientation: Qt.Vertical
+                            onWheel: if (rotation <= -15) {
+                                rotation = 0
+                                tabBar.incrementCurrentIndex()
+                            } else if (rotation >= 15) {
+                                rotation = 0
+                                tabBar.decrementCurrentIndex()
+                            }
+                        }
+                        WheelHandler {
+                            orientation: Qt.Horizontal
+                            onWheel: if (rotation <= -15) {
+                                rotation = 0
+                                tabBar.incrementCurrentIndex()
+                            } else if (rotation >= 15) {
+                                rotation = 0
+                                tabBar.decrementCurrentIndex()
+                            }
+                        }
                     }
                 }
 
