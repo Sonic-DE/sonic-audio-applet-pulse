@@ -19,6 +19,7 @@ Kirigami.FormLayout {
     property alias cfg_micOsd: micOsd.checked
     property alias cfg_muteOsd: muteOsd.checked
     property alias cfg_outputChangeOsd: outputChangeOsd.checked
+    property alias cfg_hideVirtualDevices: hideVirtualDevices.checked
 
     VolumeFeedback {
         id: feedback
@@ -45,6 +46,10 @@ Kirigami.FormLayout {
         }
     }
 
+    QQC2.CheckBox {
+        id: hideVirtualDevices
+        text: i18n("Hide virtual devices.")
+    }
 
     Item {
         Kirigami.FormData.isSection: true

@@ -28,6 +28,8 @@ Item {
     property string displayName: i18n("Audio Volume")
     property QtObject draggedStream: null
 
+    property bool hideVirtualDevices: Plasmoid.configuration.hideVirtualDevices
+
     // DEFAULT_SINK_NAME in module-always-sink.c
     readonly property string dummyOutputName: "auto_null"
 
@@ -270,6 +272,7 @@ Item {
         sortRole: "SortByDefault"
         sortOrder: Qt.DescendingOrder
         filterOutInactiveDevices: true
+        filterVirtualDevices: main.hideVirtualDevices
         sourceModel: paSinkModel
     }
 
@@ -279,6 +282,7 @@ Item {
         sortRole: "SortByDefault"
         sortOrder: Qt.DescendingOrder
         filterOutInactiveDevices: true
+        filterVirtualDevices: main.hideVirtualDevices
         sourceModel: paSourceModel
     }
 
