@@ -50,17 +50,10 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
 
 find_package(Canberra REQUIRED)
 
-option(USE_GCONF "Use legacy GConf instead of GSettings")
-
 pkg_check_modules(LIBPULSE libpulse REQUIRED IMPORTED_TARGET)
 pkg_check_modules(LIBPULSE_MAINLOOP libpulse-mainloop-glib REQUIRED IMPORTED_TARGET)
-if(USE_GCONF)
-    pkg_check_modules(GCONF gconf-2.0 REQUIRED IMPORTED_TARGET)
-    pkg_check_modules(GOBJECT gobject-2.0 REQUIRED IMPORTED_TARGET)
-else()
-    pkg_check_modules(GIO gio-2.0 REQUIRED IMPORTED_TARGET)
-    set(USE_GSETTINGS True)
-endif()
+
+pkg_check_modules(GIO gio-2.0 REQUIRED IMPORTED_TARGET)
 
 find_package(CanberraPulse)
 set_package_properties(CanberraPulse PROPERTIES
