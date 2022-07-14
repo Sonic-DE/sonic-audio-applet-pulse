@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <QDeadlineTimer>
 #include <QObject>
 #include <QPersistentModelIndex>
 #include <QPointer>
@@ -68,6 +69,7 @@ private:
 
     VolumeOSD *m_osd = nullptr;
     bool m_showOsdOnUpdate = false;
+    QDeadlineTimer m_mutedHintTimer;
 
     int m_wheelDelta = 0;
 

@@ -23,7 +23,10 @@
 
 #include "volumeosd.h"
 
+#include <chrono>
+
 using namespace QPulseAudio;
+using namespace std::chrono_literals;
 
 MicrophoneIndicator::MicrophoneIndicator(QObject *parent)
     : QObject(parent)
@@ -70,6 +73,9 @@ void MicrophoneIndicator::update()
         return;
     }
 
+    const bool allMuted = muted();
+    bool shouldShowOsd = m_showOsdOnUpdate;
+
     if (!m_sni) {
         m_sni = new KStatusNotifierItem(QStringLiteral("microphone"));
         m_sni->setCategory(KStatusNotifierItem::Hardware);
@@ -105,9 +111,14 @@ void MicrophoneIndicator::update()
 
         // don't let it quit plasmashell
         m_sni->setStandardActionsEnabled(false);
-    }
 
-    const bool allMuted = muted();
+        // If an app started using the microphone but it's muted, show the OSD as a reminder.
+        if (allMuted && m_mutedHintTimer.hasExpired()) {
+            shouldShowOsd = true;
+            // Don't show it again for some time
+            m_mutedHintTimer.setRemainingTime(1h);
+        }
+    }
 
     QString iconName;
     if (allMuted) {
@@ -137,10 +148,10 @@ void MicrophoneIndicator::update()
         m_muteAction->setChecked(allMuted);
     }
 
-    if (m_showOsdOnUpdate) {
+    if (shouldShowOsd) {
         showOsd();
-        m_showOsdOnUpdate = false;
     }
+    m_showOsdOnUpdate = false;
 }
 
 bool MicrophoneIndicator::muted() const
