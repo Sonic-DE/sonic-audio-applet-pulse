@@ -65,9 +65,11 @@ private:
     QPointer<QAction> m_dontAgainAction;
 
     QVector<QPersistentModelIndex> m_mutedIndices;
+    bool m_muted = false;
 
     VolumeOSD *m_osd = nullptr;
     bool m_showOsdOnUpdate = false;
+    bool m_showMutedHint = true;
 
     int m_wheelDelta = 0;
 
