@@ -174,7 +174,7 @@ PC3.ItemDelegate {
                     id: contextMenuButton
                     icon.name: "application-menu"
                     checked: contextMenu.visible && contextMenu.visualParent === this
-                    onPressed: {
+                    onClicked: {
                         contextMenu.visualParent = this;
                         contextMenu.openRelative();
                     }
