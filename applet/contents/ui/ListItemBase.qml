@@ -419,7 +419,8 @@ PC3.ItemDelegate {
                 defaultButton.clicked();
             }
         } else if (k === Qt.Key_Menu) {
-            contextMenuButton.clicked();
+            contextMenu.visualParent = contextMenuButton;
+            contextMenu.openRelative();
         } else {
             return; // don't accept the key press
         }
