@@ -1,16 +1,17 @@
 /*
     SPDX-FileCopyrightText: 2014-2015 Harald Sitter <sitter@kde.org>
     SPDX-FileCopyrightText: 2019 Sefa Eyeoglu <contact@scrumplex.net>
+    SPDX-FileCopyrightText: 2022 ivan (@ratijas) tkachenko <me@ratijas.tk>
 
     SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 */
 
-import QtQuick 2.4
-import QtQuick.Layouts 1.0
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
 
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.plasma.components 3.0 as PC3
-import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.plasma.core 2.1 as PlasmaCore
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.private.volume 0.1
 
@@ -208,7 +209,7 @@ PC3.ItemDelegate {
                     }
                 }
 
-                PC3.Slider {
+                VolumeSlider {
                     id: slider
 
                     // Helper properties to allow async slider updates.
@@ -227,6 +228,7 @@ PC3.ItemDelegate {
                     visible: item.model.HasVolume
                     enabled: item.model.VolumeWritable
                     opacity: item.model.Muted ? 0.5 : 1
+                    volumeObject: item.model.PulseObject
                     Behavior on to {
                         NumberAnimation {
                             duration: PlasmaCore.Units.shortDuration
@@ -234,51 +236,6 @@ PC3.ItemDelegate {
                         }
                     }
                     Accessible.name: i18nc("Accessibility data on volume slider", "Adjust volume for %1", defaultButton.text)
-
-                    // Prevents the groove from showing through the handle
-                    layer.enabled: opacity < 1
-
-                    background: PlasmaCore.FrameSvgItem {
-                        imagePath: "widgets/slider"
-                        prefix: "groove"
-                        width: parent.availableWidth
-                        height: margins.top + margins.bottom
-                        anchors.centerIn: parent
-                        scale: parent.mirrored ? -1 : 1
-
-                        PlasmaCore.FrameSvgItem {
-                            imagePath: "widgets/slider"
-                            prefix: "groove-highlight"
-                            width: slider.visualPosition * slider.availableWidth
-                            height: parent.height
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            scale: parent.mirrored ? -1 : 1
-                        }
-
-                        PlasmaCore.FrameSvgItem {
-                            imagePath: "widgets/slider"
-                            prefix: "groove-highlight"
-                            anchors.left: parent.left
-                            y: (parent.height - height) / 2
-                            width: Math.max(margins.left + margins.right, slider.handle.x * meter.volume)
-                            height: Math.max(margins.top + margins.bottom, parent.height)
-                            opacity: meter.available && (meter.volume > 0 || animation.running)
-                            status: PlasmaCore.FrameSvgItem.Selected
-                            clip: true // prevents a visual glitch, BUG 434927
-                            VolumeMonitor {
-                                id: meter
-                                target: slider.visible && item.model.PulseObject ? item.model.PulseObject : null
-                            }
-                            Behavior on width {
-                                NumberAnimation  {
-                                    id: animation
-                                    duration: PlasmaCore.Units.shortDuration
-                                    easing.type: Easing.OutQuad
-                                }
-                            }
-                        }
-                    }
 
                     Component.onCompleted: {
                         ignoreValueChange = false;
