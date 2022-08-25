@@ -81,8 +81,7 @@ PC3.Slider {
             imagePath: "widgets/slider"
             prefix: "groove-highlight"
             status: PlasmaCore.FrameSvgItem.Selected
-            opacity: meter.available && (control.volume > 0 || animate.running)
-            clip: true // prevents a visual glitch, BUG 434927
+            visible: meter.available && (control.volume > 0 || animate.running)
 
             anchors.left: parent.left
             anchors.bottom: parent.bottom
