@@ -435,7 +435,7 @@ ScrollViewKCM {
                             spacing: 0
 
                             Kirigami.Icon {
-                                source: "audio-speakers-symbolic"
+                                source: "qrc:/icons/audio-speakers-symbolic"
                                 color: isPlaying ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
                                 implicitWidth: Kirigami.Units.iconSizes.medium
                                 implicitHeight: Kirigami.Units.iconSizes.medium

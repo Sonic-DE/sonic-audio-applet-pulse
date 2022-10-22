@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/icons">
+    <file alias="audio-speakers-symbolic">icons/audio-speakers-symbolic.svg</file>
+</qresource>
+</RCC>
