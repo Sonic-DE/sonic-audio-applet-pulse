@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/kcm_pulseaudio/icons">
+    <!-- Strip extension from the alias so Kirigami.Icon knows it's recolorable -->
+    <file alias="audio-speakers-symbolic">icons/audio-speakers-symbolic.svg</file>
+</qresource>
+</RCC>
