@@ -1,4 +1,4 @@
-add_library(kcm_pulseaudio MODULE module.cpp)
+add_library(kcm_pulseaudio MODULE module.cpp resources.qrc)
 
 target_link_libraries(kcm_pulseaudio
     Qt::Quick
