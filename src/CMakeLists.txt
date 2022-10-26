@@ -32,6 +32,7 @@ set(cpp_SRCS
     qml/microphoneindicator.cpp
     qml/volumeosd.cpp
     qml/volumefeedback.cpp
+    qml/globalconfig.cpp
 )
 
 set(qml_SRCS
@@ -51,6 +52,9 @@ target_link_libraries(plasma-volume-declarative
     KF5::GlobalAccel
     KF5::I18n
     KF5::Notifications
+    KF5::ConfigCore
+    KF5::ConfigGui
+    KF5::CoreAddons
     Canberra::Canberra
     PkgConfig::LIBPULSE
     PkgConfig::LIBPULSE_MAINLOOP
