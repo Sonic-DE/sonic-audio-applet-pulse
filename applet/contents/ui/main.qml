@@ -750,7 +750,7 @@ Item {
         }
     }
 
-    function action_openKcm() {
+    function action_configure() {
         KQCAddons.KCMShell.openSystemSettings("kcm_pulseaudio");
     }
 
@@ -761,9 +761,14 @@ Item {
         plasmoid.action("forceMute").checkable = true;
         plasmoid.action("forceMute").checked = Qt.binding(() => globalMute);
 
-        // FIXME only while Multi-page KCMs are broken when embedded in plasmoid config
-        plasmoid.setAction("openKcm", i18n("&Configure Audio Devices…"), "audio-volume-high");
-        plasmoid.action("openKcm").visible = (KQCAddons.KCMShell.authorize("kcm_pulseaudio.desktop").length > 0);
+        plasmoid.setAction("showVirtualDevices", i18n("Show virtual devices"), "audio-card");
+        plasmoid.action("showVirtualDevices").checkable = true;
+        plasmoid.action("showVirtualDevices").checked = Qt.binding(() => plasmoid.configuration.showVirtualDevices);
+
+        if (KQCAddons.KCMShell.authorize("kcm_pulseaudio.desktop").length > 0) {
+            plasmoid.removeAction("configure");
+            plasmoid.setAction("configure", i18n("&Configure Audio Devices…"), "configure", "alt+d, s");
+        }
 
         // migrate settings if they aren't default
         // this needs to be done per instance of the applet
