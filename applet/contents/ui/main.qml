@@ -737,7 +737,7 @@ Item {
 
                 text: i18n("Raise maximum volume")
 
-                onToggled: config.raiseMaximumVolume = checked
+                onToggled: { config.raiseMaximumVolume = checked; config.save() }
             }
         }
     }
@@ -777,21 +777,27 @@ Item {
         }
         if (Plasmoid.configuration.volumeFeedback === false && config.audioFeedback) {
             config.audioFeedback = false;
+            config.save();
         }
         if (Plasmoid.configuration.volumeStep && Plasmoid.configuration.volumeStep !== 5 && config.volumeStep === 5) {
             config.volumeStep = Plasmoid.configuration.volumeStep;
+            config.save();
         }
         if (Plasmoid.configuration.raiseMaximumVolume === true && !config.raiseMaximumVolume) {
             config.raiseMaximumVolume = true;
+            config.save();
         }
         if (Plasmoid.configuration.volumeOsd === false && config.volumeOsd) {
             config.volumeOsd = false;
+            config.save();
         }
         if (Plasmoid.configuration.muteOsd === false && config.muteOsd) {
             config.muteOsd = false;
+            config.save();
         }
         if (Plasmoid.configuration.micOsd === false && config.microphoneSensitivityOsd) {
             config.microphoneSensitivityOsd = false;
+            config.save();
         }
         Plasmoid.configuration.migrated = true;
     }
