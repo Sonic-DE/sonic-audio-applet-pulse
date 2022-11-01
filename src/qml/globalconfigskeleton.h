@@ -6,19 +6,17 @@
 class GlobalConfigSkeleton : public KConfigSkeleton
 {
 public:
-    explicit GlobalConfigSkeleton(const QString &configName=QStringLiteral("plasmaparc"), QObject *parent=nullptr)
-    : KConfigSkeleton(configName, parent)
+    explicit GlobalConfigSkeleton(const QString &configName = QStringLiteral("plasmaparc"), QObject *parent = nullptr)
+        : KConfigSkeleton(configName, parent)
     {
         setupWatcher();
     };
-    explicit GlobalConfigSkeleton(KSharedConfig::Ptr config, QObject *parent=nullptr)
-    : KConfigSkeleton(config, parent)
+    explicit GlobalConfigSkeleton(KSharedConfig::Ptr config, QObject *parent = nullptr)
+        : KConfigSkeleton(config, parent)
     {
         setupWatcher();
     };
-    ~GlobalConfigSkeleton() override
-    {
-    };
+    ~GlobalConfigSkeleton() override{};
 
 private:
     KConfigWatcher::Ptr m_configWatcher;
