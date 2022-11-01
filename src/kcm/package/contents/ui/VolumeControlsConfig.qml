@@ -29,10 +29,9 @@ Kirigami.Page {
             wideMode: true
 
             QQC2.CheckBox {
-                // Kirigami.FormData.label: i18n("Raise maximum volume:")
                 checked: config.raiseMaximumVolume
                 text: i18n("Raise maximum volume")
-                onToggled: config.raiseMaximumVolume = checked
+                onToggled: { config.raiseMaximumVolume = checked; config.save() }
             }
 
             QQC2.SpinBox {
@@ -41,7 +40,7 @@ Kirigami.Page {
                 Layout.minimumWidth: Kirigami.Units.gridUnit * 3
                 Kirigami.FormData.label: i18n("Volume change step:")
                 value: config.volumeStep
-                onValueModified: config.volumeStep = value
+                onValueModified: { config.volumeStep = value; config.save() }
                 from: 1
                 to: 100
                 stepSize: 1
@@ -62,7 +61,7 @@ Kirigami.Page {
             QQC2.CheckBox {
                 id: volumeFeedback
                 checked: config.audioFeedback
-                onToggled: config.audioFeedback = checked
+                onToggled: { config.audioFeedback = checked; config.save() }
                 Kirigami.FormData.label: i18n("Play audio feedback for changes to:")
                 text: i18n("Audio volume")
                 enabled: feedback.valid
@@ -71,7 +70,7 @@ Kirigami.Page {
             QQC2.CheckBox {
                 id: volumeOsd
                 checked: config.volumeOsd
-                onToggled: config.volumeOsd = checked
+                onToggled: { config.volumeOsd = checked; config.save() }
                 Kirigami.FormData.label: i18n("Show visual feedback for changes to:")
                 text: i18n("Audio volume")
             }
@@ -79,21 +78,21 @@ Kirigami.Page {
             QQC2.CheckBox {
                 id: micOsd
                 checked: config.microphoneSensitivityOsd
-                onToggled: config.microphoneSensitivityOsd = checked
+                onToggled: { config.microphoneSensitivityOsd = checked; config.save() }
                 text: i18n("Microphone sensitivity")
             }
 
             QQC2.CheckBox {
                 id: muteOsd
                 checked: config.muteOsd
-                onToggled: config.muteOsd = checked
+                onToggled: { config.muteOsd = checked; config.save() }
                 text: i18n("Mute state")
             }
 
             QQC2.CheckBox {
                 id: outputChangeOsd
                 checked: config.defaultOutputDeviceOsd
-                onToggled: config.defaultOutputDeviceOsd = checked
+                onToggled: { config.defaultOutputDeviceOsd = checked; config.save() }
                 text: i18n("Default output device")
             }
         }
