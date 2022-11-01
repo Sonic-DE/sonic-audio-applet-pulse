@@ -406,7 +406,6 @@ Item {
         id: osd
 
         function showVolume(text) {
-            console.log(config)
             if (!config.volumeOsd)
                 return
             show(text, currentMaxVolumePercent)
