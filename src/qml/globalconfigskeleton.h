@@ -1,3 +1,9 @@
+/*
+    SPDX-FileCopyrightText: 2022 Bharadwaj Raju <bharadwaj.raju777@protonmail.com>
+
+    SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
 #include <KConfigSkeleton>
 #include <KConfigWatcher>
 
