@@ -73,6 +73,51 @@ ScrollViewKCM {
         id: moduleManager
     }
 
+    actions.main: Kirigami.Action {
+        icon.name: "view-visible"
+        visible: (paSourceModel.count != paSourceFilterModel.count) || (paSinkModel.count != paSinkFilterModel.count)
+
+        displayComponent: Switch {
+            id: inactiveDevicesSwitch
+
+            text: i18nd("kcm_pulseaudio", "Show Inactive Devices")
+        }
+    }
+
+    actions.contextualActions: [
+        Kirigami.Action {
+            icon.name: "configure"
+            text: i18nd("kcm_pulseaudio", "Configure Volume Controls…")
+            onTriggered: kcm.push("VolumeControlsConfig.qml", { "config": config })
+        },
+        Kirigami.Action {
+            id: configureButton
+            visible: moduleManager.settingsSupported
+            enabled: moduleManager.configModuleLoaded
+            text: i18nd("kcm_pulseaudio", "Configure…")
+            icon.name: "configure"
+
+            ToolTip.visible: !enabled && hovered
+            ToolTip.text: i18nd("kcm_pulseaudio", "Requires %1 PulseAudio module", moduleManager.configModuleName)
+
+            checked: configureMenu.opened
+            onTriggered: configureMenu.open()
+
+            Kirigami.Action {
+                text: i18nd("kcm_pulseaudio", "Add virtual output device for simultaneous output on all local sound cards")
+                checkable: true
+                checked: moduleManager.combineSinks
+                onToggled: moduleManager.combineSinks = checked
+            }
+            Kirigami.Action {
+                text: i18nd("kcm_pulseaudio", "Automatically switch all running streams when a new output becomes available")
+                checkable: true
+                checked: moduleManager.switchOnConnect
+                onToggled: moduleManager.switchOnConnect = checked
+            }
+        }
+    ]
+
     view: Flickable {
         id: flickable
 
@@ -116,7 +161,7 @@ ScrollViewKCM {
                 Layout.preferredHeight: contentHeight
                 interactive: false
                 spacing: Kirigami.Units.largeSpacing
-                model: inactiveDevicesButton.checked || !inactiveDevicesButton.visible ? paSinkModel : paSinkFilterModel
+                model: inactiveDevicesSwitch.checked || !inactiveDevicesSwitch.visible ? paSinkModel : paSinkFilterModel
                 delegate: DeviceListItem {
                     isPlayback: true
                     comboBoxLabelsVisible: column.comboBoxLabelsVisible
@@ -140,7 +185,7 @@ ScrollViewKCM {
                 Layout.preferredHeight: contentHeight
                 interactive: false
                 spacing: Kirigami.Units.largeSpacing
-                model: inactiveDevicesButton.checked || !inactiveDevicesButton.visible ? paSourceModel : paSourceFilterModel
+                model: inactiveDevicesSwitch.checked || !inactiveDevicesSwitch.visible ? paSourceModel : paSourceFilterModel
                 delegate: DeviceListItem {
                     isPlayback: false
                     comboBoxLabelsVisible: column.comboBoxLabelsVisible
@@ -255,62 +300,6 @@ ScrollViewKCM {
                 delegate: StreamListItem {
                     deviceModel: sourceModel
                     isPlayback: false
-                }
-            }
-        }
-    }
-
-    footer: RowLayout {
-        Item {
-            Layout.fillWidth: true
-        }
-
-        Button {
-            id: inactiveDevicesButton
-            checkable: true
-            text: i18nd("kcm_pulseaudio", "Show Inactive Devices")
-            icon.name: "view-visible"
-
-            // Only show if there actually are any inactive devices
-            visible: (paSourceModel.count != paSourceFilterModel.count) || (paSinkModel.count != paSinkFilterModel.count)
-        }
-
-        Button {
-            text: i18n("Configure Volume Controls…")
-            icon.name: "configure"
-            onClicked: kcm.push("VolumeControlsConfig.qml", { "config": config })
-        }
-
-        Button {
-            id: configureButton
-            visible: moduleManager.settingsSupported
-            enabled: moduleManager.configModuleLoaded
-            text: i18nd("kcm_pulseaudio", "Configure…")
-            icon.name: "configure"
-
-            ToolTip.visible: !enabled && hovered
-            ToolTip.text: i18nd("kcm_pulseaudio", "Requires %1 PulseAudio module", moduleManager.configModuleName)
-
-            checkable: true
-            checked: configureMenu.opened
-            onClicked: configureMenu.open()
-
-            Menu {
-                id: configureMenu
-                y: -height - Kirigami.Units.smallSpacing
-                modal: true
-
-                MenuItem {
-                    text: i18nd("kcm_pulseaudio", "Add virtual output device for simultaneous output on all local sound cards")
-                    checkable: true
-                    checked: moduleManager.combineSinks
-                    onToggled: moduleManager.combineSinks = checked;
-                }
-                MenuItem {
-                    text: i18nd("kcm_pulseaudio", "Automatically switch all running streams when a new output becomes available")
-                    checkable: true
-                    checked: moduleManager.switchOnConnect
-                    onToggled: moduleManager.switchOnConnect = checked;
                 }
             }
         }
