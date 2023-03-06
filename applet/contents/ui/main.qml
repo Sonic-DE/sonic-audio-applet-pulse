@@ -312,7 +312,32 @@ Item {
     }
 
     // Input devices
-    readonly property SourceModel paSourceModel: SourceModel { id: paSourceModel }
+    readonly property SourceModel paSourceModel: SourceModel {
+        id: paSourceModel
+
+        property bool initalDefaultSourceIsSet: false
+
+        onDefaultSourceChanged: {
+            // avoid showing a OSD on startup
+            if (!initalDefaultSourceIsSet) {
+                initalDefaultSourceIsSet = true;
+                return;
+            }
+            var description = defaultSource.description;
+            var icon = Icon.formFactorIcon(defaultSource.formFactor);
+            if (!icon) {
+                // Show "muted" icon for Dummy output
+                if (isDummyOutput(defaultSource)) {
+                    icon = "microphone-sensitivity-muted";
+                }
+            }
+
+            if (!icon) {
+                icon = Icon.name(defaultSource.volume, false, "microphone-sensitivity");
+            }
+            osd.showText(icon, description);
+        }
+    }
 
     // Confusingly, Sink Input is what PulseAudio calls streams that send audio to an output device
     readonly property SinkInputModel paSinkInputModel: SinkInputModel { id: paSinkInputModel }
