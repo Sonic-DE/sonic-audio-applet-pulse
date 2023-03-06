@@ -171,34 +171,33 @@ Item {
     }
 
     function changeSink(direction) {
+        var nextIndex = 0
         for (var i = 0; i < paSinkFilterModel.count; i++) {
-            //should return true if the index is default
             if (paSinkFilterModel.get(i).PulseObject.default)
             {
-                var nextIndex;
-                if (direction == "next") {
-                    nextIndex = (i + 1) % paSinkFilterModel.count;
-                } else if (direction == "previous") {
-                    nextIndex = (i - 1 + paSinkFilterModel.count) % paSinkFilterModel.count;
+                if (direction == "next" && i < paSinkFilterModel.count) {
+                    nextIndex = i + 1
+                } else if (direction == "previous" && i > 0) {
+                    nextIndex = i - 1
                 }
-                paSinkFilterModel.get(nextIndex).PulseObject.default = true;
+                paSinkFilterModel.get(nextIndex).PulseObject.default = true
                 break;
             }
         }
     }
 
     function changeSource(direction) {
+        var nextIndex = 0
         for (var i = 0; i < paSourceFilterModel.count; i++) {
             //should return true if the index is default
             if (paSourceFilterModel.get(i).PulseObject.default)
             {
-                var nextIndex;
-                if (direction == "next") {
-                    nextIndex = (i + 1) % paSourceFilterModel.count;
-                } else if (direction == "previous") {
-                    nextIndex = (i - 1 + paSourceFilterModel.count) % paSourceFilterModel.count;
+                if (direction == "next" && i < paSourceFilterModel.count ) {
+                    nextIndex = i + 1
+                } else if (direction == "previous" && i > 0) {
+                    nextIndex = i - 1
                 }
-                paSourceFilterModel.get(nextIndex).PulseObject.default = true;
+                paSourceFilterModel.get(nextIndex).PulseObject.default = true
                 break;
             }
         }
