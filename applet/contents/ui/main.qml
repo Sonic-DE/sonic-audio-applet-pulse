@@ -170,6 +170,40 @@ Item {
         osd.showMicMute(toMute? 0 : volumePercent(paSourceModel.defaultSource.volume));
     }
 
+    function changeSink(direction) {
+        for (var i = 0; i < paSinkFilterModel.count; i++) {
+            //should return true if the index is default
+            if (paSinkFilterModel.get(i).PulseObject.default)
+            {
+                var nextIndex;
+                if (direction == "next") {
+                    nextIndex = (i + 1) % paSinkFilterModel.count;
+                } else if (direction == "previous") {
+                    nextIndex = (i - 1 + paSinkFilterModel.count) % paSinkFilterModel.count;
+                }
+                paSinkFilterModel.get(nextIndex).PulseObject.default = true;
+                break;
+            }
+        }
+    }
+
+    function changeSource(direction) {
+        for (var i = 0; i < paSourceFilterModel.count; i++) {
+            //should return true if the index is default
+            if (paSourceFilterModel.get(i).PulseObject.default)
+            {
+                var nextIndex;
+                if (direction == "next") {
+                    nextIndex = (i + 1) % paSourceFilterModel.count;
+                } else if (direction == "previous") {
+                    nextIndex = (i - 1 + paSourceFilterModel.count) % paSourceFilterModel.count;
+                }
+                paSourceFilterModel.get(nextIndex).PulseObject.default = true;
+                break;
+            }
+        }
+    }
+
     function playFeedback(sinkIndex) {
         if (!volumeFeedback) {
             return;
@@ -179,7 +213,6 @@ Item {
         }
         feedback.play(sinkIndex);
     }
-
 
     function enableGlobalMute() {
         var role = paSinkModel.role("Muted");
@@ -423,6 +456,30 @@ Item {
             text: i18n("Mute Microphone")
             shortcuts: [Qt.Key_MicMute, Qt.MetaModifier | Qt.Key_VolumeMute]
             onTriggered: muteMicrophone()
+        }
+        GlobalAction {
+            objectName: "next_sink"
+            text: i18n("Next Sink")
+            shortcuts: none
+            onTriggered: changeSink("next")
+        }
+        GlobalAction {
+            objectName: "previous_sink"
+            text: i18n("Previous Sink")
+            shortcuts: none
+            onTriggered: changeSink("previous")
+        }
+        GlobalAction {
+            objectName: "next_source"
+            text: i18n("Next Source")
+            shortcuts: none
+            onTriggered: changeSource("next")
+        }
+        GlobalAction {
+            objectName: "previous_source"
+            text: i18n("Previous Source")
+            shortcuts: none
+            onTriggered: changeSource("previous")
         }
     }
 
