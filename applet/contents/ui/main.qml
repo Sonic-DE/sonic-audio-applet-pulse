@@ -467,13 +467,13 @@ Item {
         GlobalAction {
             objectName: "increase_microphone_volume"
             text: i18n("Increase Microphone Volume")
-            shortcut: Qt.Key_MicVolumeUp
+            shortcuts: [Qt.Key_MicVolumeUp, Qt.MetaModifier | Qt.Key_VolumeUp]
             onTriggered: increaseMicrophoneVolume()
         }
         GlobalAction {
             objectName: "decrease_microphone_volume"
             text: i18n("Decrease Microphone Volume")
-            shortcut: Qt.Key_MicVolumeDown
+            shortcuts: [Qt.Key_MicVolumeDown, Qt.MetaModifier | Qt.Key_VolumeDown]
             onTriggered: decreaseMicrophoneVolume()
         }
         GlobalAction {
@@ -482,28 +482,29 @@ Item {
             shortcuts: [Qt.Key_MicMute, Qt.MetaModifier | Qt.Key_VolumeMute]
             onTriggered: muteMicrophone()
         }
+        //Add sink switches
         GlobalAction {
             objectName: "next_sink"
             text: i18n("Next Sink")
-            shortcuts: none
+            shortcut: Qt.ControlModifier | Qt.Key_VolumeUp
             onTriggered: changeSink("next")
         }
         GlobalAction {
             objectName: "previous_sink"
             text: i18n("Previous Sink")
-            shortcuts: none
+            shortcut: Qt.ControlModifier | Qt.Key_VolumeDown
             onTriggered: changeSink("previous")
         }
         GlobalAction {
             objectName: "next_source"
             text: i18n("Next Source")
-            shortcuts: none
+            shortcut: Qt.AltModifier | Qt.Key_VolumeUp
             onTriggered: changeSource("next")
         }
         GlobalAction {
             objectName: "previous_source"
             text: i18n("Previous Source")
-            shortcuts: none
+            shortcut: Qt.AltModifier | Qt.Key_VolumeDown
             onTriggered: changeSource("previous")
         }
     }
