@@ -509,31 +509,6 @@ Item {
                 return
             showMicrophone(text)
         }
-        //Add sink switches
-        GlobalAction {
-            objectName: "next_sink"
-            text: i18n("Next Sink")
-            shortcuts: none
-            onTriggered: changeSink("next")
-        }
-        GlobalAction {
-            objectName: "previous_sink"
-            text: i18n("Previous Sink")
-            shortcuts: none
-            onTriggered: changeSink("previous")
-        }
-        GlobalAction {
-            objectName: "next_source"
-            text: i18n("Next Source")
-            shortcuts: none
-            onTriggered: changeSource("next")
-        }
-        GlobalAction {
-            objectName: "previous_source"
-            text: i18n("Previous Source")
-            shortcuts: none
-            onTriggered: changeSource("previous")
-        }
     }
 
     VolumeFeedback {
