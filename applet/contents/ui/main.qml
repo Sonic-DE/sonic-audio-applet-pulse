@@ -357,15 +357,21 @@ Item {
         onWheel: {
             const delta = (wheel.inverted ? -1 : 1) * (wheel.angleDelta.y || wheel.angleDelta.x);
             wheelDelta += delta;
+            var volumeChanged = false;
             // Magic number 120 for common "one click"
             // See: https://qt-project.org/doc/qt-5/qml-qtquick-wheelevent.html#angleDelta-prop
             while (wheelDelta >= 120) {
                 wheelDelta -= 120;
                 increaseVolume();
+                volumeChanged = true;
             }
             while (wheelDelta <= -120) {
                 wheelDelta += 120;
                 decreaseVolume();
+                volumeChanged = true;
+            }
+            if (volumeChanged) {
+                wheelDelta = 0;
             }
         }
         PlasmaCore.IconItem {
