@@ -484,25 +484,25 @@ Item {
         //Add sink switches
         GlobalAction {
             objectName: "next_sink"
-            text: i18n("Next Sink")
+            text: i18n("Next Output Device")
             shortcut: Qt.ControlModifier | Qt.Key_VolumeUp
             onTriggered: changeSink("next")
         }
         GlobalAction {
             objectName: "previous_sink"
-            text: i18n("Previous Sink")
+            text: i18n("Previous Output Device")
             shortcut: Qt.ControlModifier | Qt.Key_VolumeDown
             onTriggered: changeSink("previous")
         }
         GlobalAction {
             objectName: "next_source"
-            text: i18n("Next Source")
+            text: i18n("Next Input Device")
             shortcut: Qt.AltModifier | Qt.Key_VolumeUp
             onTriggered: changeSource("next")
         }
         GlobalAction {
             objectName: "previous_source"
-            text: i18n("Previous Source")
+            text: i18n("Previous Input Device")
             shortcut: Qt.AltModifier | Qt.Key_VolumeDown
             onTriggered: changeSource("previous")
         }
