@@ -17,7 +17,7 @@ import org.kde.plasma.private.volume 0.1
 
 import "../code/icon.js" as Icon
 
-Item {
+PlasmoidItem {
     id: main
 
     GlobalConfig {
@@ -41,12 +41,12 @@ Item {
     Layout.minimumWidth: PlasmaCore.Units.gridUnit * 14
     Layout.preferredHeight: PlasmaCore.Units.gridUnit * 21
     Layout.preferredWidth: PlasmaCore.Units.gridUnit * 24
-    Plasmoid.switchHeight: Layout.minimumHeight
-    Plasmoid.switchWidth: Layout.minimumWidth
+    switchHeight: Layout.minimumHeight
+    switchWidth: Layout.minimumWidth
 
     Plasmoid.icon: paSinkModel.preferredSink && !isDummyOutput(paSinkModel.preferredSink) ? Icon.name(paSinkModel.preferredSink.volume, paSinkModel.preferredSink.muted)
                                                                                           : Icon.name(0, true)
-    Plasmoid.toolTipMainText: {
+    toolTipMainText: {
         var sink = paSinkModel.preferredSink;
         if (!sink || isDummyOutput(sink)) {
             return displayName;
@@ -58,7 +58,7 @@ Item {
             return i18n("Volume at %1%", volumePercent(sink.volume));
         }
     }
-    Plasmoid.toolTipSubText: {
+    toolTipSubText: {
         let lines = [];
 
         if (paSinkModel.preferredSink && paSinkFilterModel.count > 1 && !isDummyOutput(paSinkModel.preferredSink)) {
@@ -335,7 +335,7 @@ Item {
         }
     }
 
-    Plasmoid.compactRepresentation:MouseArea {
+    compactRepresentation:MouseArea {
         property int wheelDelta: 0
         property bool wasExpanded: false
 
@@ -475,7 +475,7 @@ Item {
         imagePath: "widgets/line"
     }
 
-    Plasmoid.fullRepresentation: PlasmaExtras.Representation {
+    fullRepresentation: PlasmaExtras.Representation {
         id: fullRep
 
         Layout.preferredHeight: main.Layout.preferredHeight
