@@ -344,14 +344,14 @@ PlasmoidItem {
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         onPressed: mouse => {
             if (mouse.button == Qt.LeftButton) {
-                wasExpanded = plasmoid.expanded;
+                wasExpanded = main.expanded;
             } else if (mouse.button == Qt.MiddleButton) {
                 muteVolume();
             }
         }
         onClicked: mouse => {
             if (mouse.button == Qt.LeftButton) {
-                plasmoid.expanded = !wasExpanded;
+                main.expanded = !wasExpanded;
             }
         }
         onWheel: wheel => {
