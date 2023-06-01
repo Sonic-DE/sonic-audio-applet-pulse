@@ -37,10 +37,6 @@ PlasmoidItem {
     // DEFAULT_SINK_NAME in module-always-sink.c
     readonly property string dummyOutputName: "auto_null"
 
-    Layout.minimumHeight: PlasmaCore.Units.gridUnit * 8
-    Layout.minimumWidth: PlasmaCore.Units.gridUnit * 14
-    Layout.preferredHeight: PlasmaCore.Units.gridUnit * 21
-    Layout.preferredWidth: PlasmaCore.Units.gridUnit * 24
     switchHeight: Layout.minimumHeight
     switchWidth: Layout.minimumWidth
 
@@ -478,8 +474,11 @@ PlasmoidItem {
     fullRepresentation: PlasmaExtras.Representation {
         id: fullRep
 
-        Layout.preferredHeight: main.Layout.preferredHeight
-        Layout.preferredWidth: main.Layout.preferredWidth
+        Layout.minimumHeight: PlasmaCore.Units.gridUnit * 8
+        Layout.minimumWidth: PlasmaCore.Units.gridUnit * 14
+        Layout.preferredHeight: PlasmaCore.Units.gridUnit * 21
+        Layout.preferredWidth: PlasmaCore.Units.gridUnit * 24
+
         collapseMarginsHint: true
 
         KeyNavigation.down: tabBar.currentItem
