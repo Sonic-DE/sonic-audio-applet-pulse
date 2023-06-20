@@ -503,7 +503,7 @@ PlasmoidItem {
 
         header: PlasmaExtras.PlasmoidHeading {
             // Make this toolbar's buttons align vertically with the ones above
-            rightPadding: -Kirigami.Units.devicePixelRatio
+            rightPadding: -1
             // Allow tabbar to touch the header's bottom border
             bottomPadding: -bottomInset
 
