@@ -788,7 +788,7 @@ PlasmoidItem {
         Plasmoid.configuration.showVirtualDevices = !Plasmoid.configuration.showVirtualDevices;
     }
 
-    Plasmoid.contextualActions: {
+    Plasmoid.contextualActions: [
         PlasmaCore.Action {
             text: i18n("Force mute all playback devices")
             icon.name: "audio-volume-muted"
@@ -816,7 +816,7 @@ PlasmoidItem {
             visible: KAuthorized.authorizeControlModule("kcm_pulseaudio")
             onTriggered: KCMLauncher.openSystemSettings("kcm_pulseaudio")
         }
-    }
+    ]
     Component.onCompleted: {
         MicrophoneIndicator.init();
         Plasmoid.removeInternalAction("configure");
