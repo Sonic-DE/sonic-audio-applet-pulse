@@ -780,14 +780,6 @@ PlasmoidItem {
         }
     }
 
-    function action_configure() {
-        KCMLauncher.openSystemSettings("kcm_pulseaudio");
-    }
-
-    function action_showVirtualDevices() {
-        Plasmoid.configuration.showVirtualDevices = !Plasmoid.configuration.showVirtualDevices;
-    }
-
     Plasmoid.contextualActions: [
         PlasmaCore.Action {
             text: i18n("Force mute all playback devices")
@@ -806,20 +798,23 @@ PlasmoidItem {
             text: i18n("Show virtual devices")
             icon.name: "audio-card"
             checkable: true
-            checked: plasmoid.configuration.showVirtualDevices
+            checked: Plasmoid.configuration.showVirtualDevices
             onTriggered: Plasmoid.configuration.showVirtualDevices = !Plasmoid.configuration.showVirtualDevices
-        },
-        PlasmaCore.Action {
-            text: i18n("&Configure Audio Devices…")
-            icon.name: "configure"
-            shortcut: "alt+d, s"
-            visible: KAuthorized.authorizeControlModule("kcm_pulseaudio")
-            onTriggered: KCMLauncher.openSystemSettings("kcm_pulseaudio")
         }
     ]
+
+    PlasmaCore.Action {
+        id: configureAction
+        text: i18n("&Configure Audio Devices…")
+        icon.name: "configure"
+        shortcut: "alt+d, s"
+        visible: KAuthorized.authorizeControlModule("kcm_pulseaudio")
+        onTriggered: KCMLauncher.openSystemSettings("kcm_pulseaudio")
+    }
+
     Component.onCompleted: {
         MicrophoneIndicator.init();
-        Plasmoid.removeInternalAction("configure");
+        Plasmoid.setInternalAction("configure", configureAction);
 
         // migrate settings if they aren't default
         // this needs to be done per instance of the applet
