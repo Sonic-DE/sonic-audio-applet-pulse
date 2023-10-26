@@ -126,9 +126,7 @@ PlasmoidItem {
     }
 
     function decreaseVolume(modifiers = Qt.NoModifier) {
-        if (globalMute) {
-            disableGlobalMute();
-        }
+        // Don't unmute when decreasing volume (to protect ears)
         changeSpeakerVolume((modifiers & Qt.ShiftModifier) ? -1 : -volumePercentStep);
     }
 
