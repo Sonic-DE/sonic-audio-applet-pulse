@@ -4,6 +4,8 @@
 # SPDX-FileCopyrightText: 2023 Fushan Wen <qydwhotmail@gmail.com>
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import subprocess
+import sys
 import unittest
 from typing import Final
 
@@ -39,9 +41,9 @@ def keyval_to_keycode(key_val: int) -> int:
     return keys[0].keycode
 
 
-class DesktopTest(unittest.TestCase):
+class AppletTest(unittest.TestCase):
     """
-    Tests for the desktop package
+    Tests for the widget
     """
 
     driver: webdriver.Remote
@@ -78,6 +80,16 @@ class DesktopTest(unittest.TestCase):
         """
         Tests the widget can be opened
         """
+        self.driver.find_element(AppiumBy.NAME, "No output or input devices found")
+
+    def test_1_audio_device(self) -> None:
+        """
+        Add a null sink
+        """
+        with subprocess.Popen(["pipewire-pulse"], stdout=sys.stderr, stderr=sys.stderr):
+            description: Final = "Virtual_Dummy_Output"
+            subprocess.check_call(["pactl", "load-module", "module-null-sink", "sink_name=DummyOutput", f"sink_properties=device.description={description}"])
+            self.driver.find_element(AppiumBy.NAME, description)
         self.driver.find_element(AppiumBy.NAME, "No output or input devices found")
 
 
