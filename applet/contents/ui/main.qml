@@ -779,6 +779,8 @@ PlasmoidItem {
 
                 text: i18n("Raise maximum volume")
 
+                Accessible.onPressAction: raiseMaximumVolumeCheckbox.toggle()
+
                 onToggled: { config.raiseMaximumVolume = checked; config.save() }
             }
         }
