@@ -223,6 +223,8 @@ PC3.ItemDelegate {
                     muted: item.model.Muted
                     volumeObject: item.model.PulseObject
                     Accessible.name: i18nc("Accessibility data on volume slider", "Adjust volume for %1", defaultButton.text)
+                    Accessible.onIncreaseAction: moved()
+                    Accessible.onDecreaseAction: moved()
 
                     value: to, item.model.Volume
                     onMoved: {
