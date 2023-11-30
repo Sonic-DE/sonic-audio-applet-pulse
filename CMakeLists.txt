@@ -49,6 +49,7 @@ find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS
     I18n
     KCMUtils
     Svg
+    DBusAddons
 )
 
 find_package(Plasma ${PROJECT_VERSION} REQUIRED)
