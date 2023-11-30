@@ -1,0 +1,53 @@
+/*
+    SPDX-FileCopyrightText: 2023 Bharadwaj Raju <bharadwaj.raju777@gmail.com>
+    SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
+#pragma once
+
+#include <KConfigWatcher>
+#include <kdedmodule.h>
+
+#include "context.h"
+#include "pulseaudio.h"
+#include "volumefeedback.h"
+#include "volumeosd.h"
+
+using namespace Qt::Literals::StringLiterals;
+
+// DEFAULT_SINK_NAME in module-always-sink.c
+const auto DUMMY_OUTPUT_NAME = "auto_null"_L1;
+
+class AudioShortcutsService : public KDEDModule
+{
+    Q_OBJECT
+public:
+    AudioShortcutsService(QObject *parent, const QList<QVariant> &);
+
+private:
+    qint64 boundVolume(qint64 volume, int maxVolume);
+    int volumePercent(qint64 volume);
+    int changeVolumePercent(QPulseAudio::Device *device, int deltaPercent);
+    void handleDefaultSinkChange();
+    void handleNewSink();
+    void muteVolume();
+    void enableGlobalMute();
+    void disableGlobalMute();
+    void loadConfig();
+    void playFeedback(int sinkIdx);
+    void showMute(int percent);
+    void showVolume(int percent);
+    void showMicMute(int percent);
+    void showMicVolume(int percent);
+
+    QPulseAudio::SinkModel *m_sinkModel = nullptr;
+    QPulseAudio::SourceModel *m_sourceModel = nullptr;
+    QPulseAudio::CardModel *m_cardModel = nullptr;
+    int m_volumeStep = 0;
+    bool m_raiseMaxVolume = false;
+    bool m_globalMute = false;
+    KConfigWatcher::Ptr m_configWatcher;
+    VolumeOSD *m_osd;
+    VolumeFeedback *m_feedback;
+    bool m_initialDefaultSinkSet = false;
+};
