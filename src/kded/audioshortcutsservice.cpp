@@ -16,12 +16,15 @@
 
 K_PLUGIN_CLASS_WITH_JSON(AudioShortcutsService, "audioshortcutsservice.json")
 
+const QString OSD_DBUS_SERVICE = "org.kde.plasmashell"_L1;
+const QString OSD_DBUS_PATH = "/org/kde/osdService"_L1;
+
 AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVariant> &)
     : KDEDModule(parent)
     , m_sinkModel(new QPulseAudio::SinkModel(this))
     , m_sourceModel(new QPulseAudio::SourceModel(this))
     , m_cardModel(new QPulseAudio::CardModel(this))
-    , m_osd(new VolumeOSD(this))
+    , m_osdDBusInterface(new OsdServiceInterface(OSD_DBUS_SERVICE, OSD_DBUS_PATH, QDBusConnection::sessionBus(), this))
     , m_feedback(new VolumeFeedback(this))
 {
     m_configWatcher = KConfigWatcher::create(KSharedConfig::openConfig(QStringLiteral("plasmaparc")));
@@ -222,7 +225,7 @@ void AudioShortcutsService::handleDefaultSinkChange()
                 icon = AudioIcon::forVolume(volumePercent(defaultSink->volume()), defaultSink->isMuted(), ""_L1);
             }
         }
-        m_osd->showText(icon, description);
+        m_osdDBusInterface->showText(icon, description);
     }
 }
 
@@ -319,7 +322,8 @@ void AudioShortcutsService::showMute(int percent)
     if (!group.readEntry("MuteOsd"_L1, true)) {
         return;
     }
-    m_osd->show(percent, m_raiseMaxVolume ? 150 : 100);
+
+    m_osdDBusInterface->volumeChanged(percent, m_raiseMaxVolume ? 150 : 100);
 }
 
 void AudioShortcutsService::showVolume(int percent)
@@ -328,7 +332,7 @@ void AudioShortcutsService::showVolume(int percent)
     if (!group.readEntry("VolumeOsd"_L1, true)) {
         return;
     }
-    m_osd->show(percent, m_raiseMaxVolume ? 150 : 100);
+    m_osdDBusInterface->volumeChanged(percent, m_raiseMaxVolume ? 150 : 100);
 }
 
 void AudioShortcutsService::showMicVolume(int percent)
@@ -337,7 +341,7 @@ void AudioShortcutsService::showMicVolume(int percent)
     if (!group.readEntry("MicrophoneSensitivityOsd"_L1, true)) {
         return;
     }
-    m_osd->showMicrophone(percent);
+    m_osdDBusInterface->microphoneVolumeChanged(percent);
 }
 
 void AudioShortcutsService::showMicMute(int percent)
@@ -346,7 +350,7 @@ void AudioShortcutsService::showMicMute(int percent)
     if (!group.readEntry("MuteOsd"_L1, true)) {
         return;
     }
-    m_osd->showMicrophone(percent);
+    m_osdDBusInterface->microphoneVolumeChanged(percent);
 }
 
 #include "audioshortcutsservice.moc"
