@@ -31,7 +31,6 @@ set(plasma-volume_SRCS
     speakertest.cpp
     gsettingsitem.cpp
     soundthemeconfig.cpp
-    volumeosd.cpp
     volumefeedback.cpp
     audioicon.cpp
 )
