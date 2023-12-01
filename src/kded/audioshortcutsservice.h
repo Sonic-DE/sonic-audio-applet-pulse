@@ -9,9 +9,9 @@
 #include <kdedmodule.h>
 
 #include "context.h"
+#include "osdservice.h"
 #include "pulseaudio.h"
 #include "volumefeedback.h"
-#include "volumeosd.h"
 
 using namespace Qt::Literals::StringLiterals;
 
@@ -47,7 +47,7 @@ private:
     bool m_raiseMaxVolume = false;
     bool m_globalMute = false;
     KConfigWatcher::Ptr m_configWatcher;
-    VolumeOSD *m_osd;
+    OsdServiceInterface *m_osdDBusInterface;
     VolumeFeedback *m_feedback;
     bool m_initialDefaultSinkSet = false;
 };
