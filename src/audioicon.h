@@ -17,8 +17,8 @@ class AudioIcon : public QObject
 public:
     Q_PROPERTY(int HIGH_UPPER_BOUND MEMBER HIGH_UPPER_BOUND CONSTANT)
     Q_PROPERTY(int VERY_HIGH_UPPER_BOUND MEMBER VERY_HIGH_UPPER_BOUND CONSTANT)
-    static const int HIGH_UPPER_BOUND = 100;
-    static const int VERY_HIGH_UPPER_BOUND = 125;
+    static constexpr int HIGH_UPPER_BOUND = 100;
+    static constexpr int VERY_HIGH_UPPER_BOUND = 125;
 
 public Q_SLOTS:
     static QString forVolume(int volume, bool muted, QString prefix);

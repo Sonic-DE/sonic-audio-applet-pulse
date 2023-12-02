@@ -16,7 +16,7 @@
 using namespace Qt::Literals::StringLiterals;
 
 // DEFAULT_SINK_NAME in module-always-sink.c
-const auto DUMMY_OUTPUT_NAME = "auto_null"_L1;
+constexpr QLatin1String DUMMY_OUTPUT_NAME = "auto_null"_L1;
 
 class AudioShortcutsService : public KDEDModule
 {
