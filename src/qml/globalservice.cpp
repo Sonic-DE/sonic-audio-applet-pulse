@@ -1,3 +1,9 @@
+/*
+    SPDX-FileCopyrightText: 2023 Bharadwaj Raju <bharadwaj.raju777@protonmail.com>
+
+    SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+*/
+
 #include "globalservice.h"
 
 #include <QDBusConnection>
@@ -8,34 +14,34 @@ using namespace Qt::Literals::StringLiterals;
 
 void GlobalService::globalMute()
 {
-    invokeShortcut("mute"_L1);
+    invokeShortcut(u"mute"_s);
 }
 
 void GlobalService::volumeUp()
 {
-    invokeShortcut("increase_volume"_L1);
+    invokeShortcut(u"increase_volume"_s);
 }
 
 void GlobalService::volumeDown()
 {
-    invokeShortcut("decrease_volume"_L1);
+    invokeShortcut(u"decrease_volume"_s);
 }
 
 void GlobalService::volumeUpSmall()
 {
-    invokeShortcut("increase_volume_small"_L1);
+    invokeShortcut(u"increase_volume_small"_s);
 }
 
 void GlobalService::volumeDownSmall()
 {
-    invokeShortcut("decrease_volume_small"_L1);
+    invokeShortcut(u"decrease_volume_small"_s);
 }
 
-void GlobalService::invokeShortcut(const QString name)
+void GlobalService::invokeShortcut(const QString &name)
 {
     QDBusConnection bus = QDBusConnection::sessionBus();
     QDBusMessage invokeMsg =
-        QDBusMessage::createMethodCall("org.kde.kglobalaccel"_L1, "/component/kmix"_L1, "org.kde.kglobalaccel.Component"_L1, "invokeShortcut"_L1);
+        QDBusMessage::createMethodCall(u"org.kde.kglobalaccel"_s, u"/component/kmix"_s, u"org.kde.kglobalaccel.Component"_s, u"invokeShortcut"_s);
     invokeMsg.setArguments({QVariant(name)});
     bus.call(invokeMsg, QDBus::NoBlock);
 }
