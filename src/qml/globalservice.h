@@ -22,6 +22,7 @@ public Q_SLOTS:
     static void volumeDownSmall();
 
 private:
+    static void ensureKDEDModule();
     static void invokeShortcut(const QString &name);
 };
 
