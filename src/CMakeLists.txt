@@ -64,7 +64,8 @@ qt_add_dbus_interface(dbus_SRCS dbus/osdService.xml osdservice)
 target_sources(plasma-volume-declarative PRIVATE ${dbus_SRCS})
 target_sources(plasma-volume PRIVATE ${dbus_SRCS})
 
-kconfig_add_kcfg_files(plasma-volume-declarative GENERATE_MOC qml/globalconfig.kcfgc)
+kconfig_add_kcfg_files(plasma-volume-declarative GENERATE_MOC globalconfig.kcfgc)
+kconfig_add_kcfg_files(plasma-volume GENERATE_MOC globalconfig.kcfgc)
 
 target_link_libraries(plasma-volume-declarative PRIVATE
     Qt::Core

@@ -13,6 +13,7 @@ target_link_libraries(audioshortcutsservice
                         KF6::GlobalAccel
                         KF6::I18n
                         KF6::ConfigCore
+                        KF6::ConfigGui
                         KF6::DBusAddons
                         PkgConfig::LIBPULSE
                         PkgConfig::LIBPULSE_MAINLOOP)
