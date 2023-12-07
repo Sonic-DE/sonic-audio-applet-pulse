@@ -39,9 +39,18 @@ void GlobalService::volumeDownSmall()
 
 void GlobalService::invokeShortcut(const QString &name)
 {
+    ensureKDEDModule();
     QDBusConnection bus = QDBusConnection::sessionBus();
     QDBusMessage invokeMsg =
         QDBusMessage::createMethodCall(u"org.kde.kglobalaccel"_s, u"/component/kmix"_s, u"org.kde.kglobalaccel.Component"_s, u"invokeShortcut"_s);
     invokeMsg.setArguments({QVariant(name)});
+    bus.call(invokeMsg, QDBus::NoBlock);
+}
+
+void GlobalService::ensureKDEDModule()
+{
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    QDBusMessage invokeMsg = QDBusMessage::createMethodCall(u"org.kde.kded6"_s, u"/kded"_s, u"org.kde.kded6"_s, u"loadModule"_s);
+    invokeMsg.setArguments({u"audioshortcutsservice"_s});
     bus.call(invokeMsg, QDBus::NoBlock);
 }
