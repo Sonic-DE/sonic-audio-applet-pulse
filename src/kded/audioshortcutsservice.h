@@ -9,6 +9,7 @@
 #include <kdedmodule.h>
 
 #include "context.h"
+#include "globalconfig.h"
 #include "osdservice.h"
 #include "pulseaudio.h"
 #include "volumefeedback.h"
@@ -33,7 +34,6 @@ private:
     void muteVolume();
     void enableGlobalMute();
     void disableGlobalMute();
-    void loadConfig();
     void playFeedback(int sinkIdx);
     void showMute(int percent);
     void showVolume(int percent);
@@ -43,10 +43,7 @@ private:
     QPulseAudio::SinkModel *m_sinkModel = nullptr;
     QPulseAudio::SourceModel *m_sourceModel = nullptr;
     QPulseAudio::CardModel *m_cardModel = nullptr;
-    int m_volumeStep = 0;
-    bool m_raiseMaxVolume = false;
-    bool m_globalMute = false;
-    KConfigWatcher::Ptr m_configWatcher;
+    GlobalConfig *m_globalConfig;
     OsdServiceInterface *m_osdDBusInterface;
     VolumeFeedback *m_feedback;
     bool m_initialDefaultSinkSet = false;
