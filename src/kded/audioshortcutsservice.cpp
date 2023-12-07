@@ -26,11 +26,8 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     , m_cardModel(new QPulseAudio::CardModel(this))
     , m_osdDBusInterface(new OsdServiceInterface(OSD_DBUS_SERVICE, OSD_DBUS_PATH, QDBusConnection::sessionBus(), this))
     , m_feedback(new VolumeFeedback(this))
+    , m_globalConfig(new GlobalConfig(this))
 {
-    m_configWatcher = KConfigWatcher::create(KSharedConfig::openConfig(u"plasmaparc"_s));
-    connect(m_configWatcher.data(), &KConfigWatcher::configChanged, this, &AudioShortcutsService::loadConfig);
-    loadConfig();
-
     connect(m_sinkModel, &QPulseAudio::SinkModel::defaultSinkChanged, this, &AudioShortcutsService::handleDefaultSinkChange);
     connect(m_sinkModel, &QPulseAudio::SinkModel::rowsInserted, this, &AudioShortcutsService::handleNewSink);
 
@@ -45,7 +42,7 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
         if (!m_sinkModel->preferredSink()) {
             return;
         }
-        int percent = changeVolumePercent(m_sinkModel->preferredSink(), m_volumeStep);
+        int percent = changeVolumePercent(m_sinkModel->preferredSink(), m_globalConfig->volumeStep());
         showVolume(percent);
         playFeedback(-1);
     });
@@ -59,7 +56,7 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
         if (!m_sinkModel->preferredSink()) {
             return;
         }
-        int percent = changeVolumePercent(m_sinkModel->preferredSink(), -m_volumeStep);
+        int percent = changeVolumePercent(m_sinkModel->preferredSink(), -m_globalConfig->volumeStep());
         showVolume(percent);
         playFeedback(-1);
     });
@@ -101,7 +98,7 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
         if (!m_sourceModel->defaultSource()) {
             return;
         }
-        int percent = changeVolumePercent(m_sourceModel->defaultSource(), m_volumeStep);
+        int percent = changeVolumePercent(m_sourceModel->defaultSource(), m_globalConfig->volumeStep());
         showMicVolume(percent);
     });
 
@@ -114,7 +111,7 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
         if (!m_sourceModel->defaultSource()) {
             return;
         }
-        int percent = changeVolumePercent(m_sourceModel->defaultSource(), -m_volumeStep);
+        int percent = changeVolumePercent(m_sourceModel->defaultSource(), -m_globalConfig->volumeStep());
         showMicVolume(percent);
     });
 
@@ -124,7 +121,7 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     muteAction->setText(i18n("Mute"));
     muteAction->setShortcut(Qt::Key_VolumeMute);
     connect(muteAction, &QAction::triggered, this, [this]() {
-        if (m_globalMute) {
+        if (m_globalConfig->globalMute()) {
             disableGlobalMute();
         } else {
             enableGlobalMute();
@@ -152,14 +149,6 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     }
 }
 
-void AudioShortcutsService::loadConfig()
-{
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    m_volumeStep = group.readEntry(u"VolumeStep"_s, 5);
-    m_raiseMaxVolume = group.readEntry(u"RaiseMaximumVolume"_s, false);
-    m_globalMute = group.readEntry(u"GlobalMute"_s, false);
-}
-
 qint64 AudioShortcutsService::boundVolume(qint64 volume, int maxVolume)
 {
     return qMax(QPulseAudio::Context::MinimalVolume, qMin(volume, maxVolume));
@@ -175,7 +164,7 @@ int AudioShortcutsService::changeVolumePercent(QPulseAudio::Device *device, int 
     const qint64 oldVolume = device->volume();
     const int oldPercent = volumePercent(oldVolume);
     const int targetPercent = oldPercent + deltaPercent;
-    const int maxVolume = QPulseAudio::Context::NormalVolume * (m_raiseMaxVolume ? 150 : 100) / 100.0;
+    const int maxVolume = QPulseAudio::Context::NormalVolume * (m_globalConfig->raiseMaximumVolume() ? 150 : 100) / 100.0;
     const qint64 newVolume = boundVolume(std::round(QPulseAudio::Context::NormalVolume * (targetPercent / 100.f)), maxVolume);
     const int newPercent = volumePercent(newVolume);
     device->setMuted(newPercent == 0);
@@ -191,8 +180,7 @@ void AudioShortcutsService::handleDefaultSinkChange()
         m_initialDefaultSinkSet = true;
         return;
     }
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    if (!group.readEntry(u"DefaultOutputDeviceOsd"_s, true)) {
+    if (!m_globalConfig->defaultOutputDeviceOsd()) {
         return;
     }
     if (!defaultSink) {
@@ -231,7 +219,7 @@ void AudioShortcutsService::handleDefaultSinkChange()
 
 void AudioShortcutsService::handleNewSink()
 {
-    if (m_globalMute) {
+    if (m_globalConfig->globalMute()) {
         for (int i = 0; i < m_sinkModel->rowCount(); i++) {
             m_sinkModel->setData(m_sinkModel->index(i, 0), true, m_sinkModel->role("Muted"_ba));
         }
@@ -247,7 +235,7 @@ void AudioShortcutsService::muteVolume()
         enableGlobalMute();
         showMute(0);
     } else {
-        if (m_globalMute) {
+        if (m_globalConfig->globalMute()) {
             disableGlobalMute();
         }
         m_sinkModel->preferredSink()->setMuted(false);
@@ -273,18 +261,15 @@ void AudioShortcutsService::enableGlobalMute()
     if (alreadyMutedDevices.length() == m_sinkModel->rowCount()) {
         alreadyMutedDevices.clear();
     }
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    group.writeEntry("GlobalMute", true);
-    group.writeEntry("GlobalMuteDevices", alreadyMutedDevices);
-    group.sync();
-    loadConfig();
+    m_globalConfig->setGlobalMuteDevices(alreadyMutedDevices);
+    m_globalConfig->setGlobalMute(true);
+    m_globalConfig->save();
     showMute(0);
 }
 
 void AudioShortcutsService::disableGlobalMute()
 {
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    QStringList keepMutedDevices = group.readEntry("GlobalMuteDevices", QStringList{});
+    QStringList keepMutedDevices = m_globalConfig->globalMuteDevices();
     for (int i = 0; i < m_sinkModel->rowCount(); i++) {
         const auto idx = m_sinkModel->index(i, 0);
         const QString name = m_sinkModel->data(idx, m_sinkModel->role("Name"_ba)).toString();
@@ -294,10 +279,8 @@ void AudioShortcutsService::disableGlobalMute()
             m_sinkModel->setData(idx, false, m_sinkModel->role("Muted"_ba));
         }
     }
-    group.writeEntry("GlobalMute", false);
-    group.writeEntry("GlobalMuteDevices", QStringList{});
-    group.sync();
-    loadConfig();
+    m_globalConfig->setGlobalMute(false);
+    m_globalConfig->save();
     if (m_sinkModel->preferredSink()) {
         showMute(volumePercent(m_sinkModel->preferredSink()->volume()));
         playFeedback(-1);
@@ -306,8 +289,7 @@ void AudioShortcutsService::disableGlobalMute()
 
 void AudioShortcutsService::playFeedback(int sinkIdx)
 {
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    if (!group.readEntry(u"AudioFeedback"_s, true)) {
+    if (!m_globalConfig->audioFeedback()) {
         return;
     }
     if (sinkIdx == -1 && m_sinkModel->preferredSink()) {
@@ -318,27 +300,23 @@ void AudioShortcutsService::playFeedback(int sinkIdx)
 
 void AudioShortcutsService::showMute(int percent)
 {
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    if (!group.readEntry(u"MuteOsd"_s, true)) {
+    if (!m_globalConfig->muteOsd()) {
         return;
     }
-
-    m_osdDBusInterface->volumeChanged(percent, m_raiseMaxVolume ? 150 : 100);
+    m_osdDBusInterface->volumeChanged(percent, m_globalConfig->raiseMaximumVolume() ? 150 : 100);
 }
 
 void AudioShortcutsService::showVolume(int percent)
 {
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    if (!group.readEntry(u"VolumeOsd"_s, true)) {
+    if (!m_globalConfig->volumeOsd()) {
         return;
     }
-    m_osdDBusInterface->volumeChanged(percent, m_raiseMaxVolume ? 150 : 100);
+    m_osdDBusInterface->volumeChanged(percent, m_globalConfig->raiseMaximumVolume() ? 150 : 100);
 }
 
 void AudioShortcutsService::showMicVolume(int percent)
 {
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    if (!group.readEntry(u"MicrophoneSensitivityOsd"_s, true)) {
+    if (!m_globalConfig->microphoneSensitivityOsd()) {
         return;
     }
     m_osdDBusInterface->microphoneVolumeChanged(percent);
@@ -346,8 +324,7 @@ void AudioShortcutsService::showMicVolume(int percent)
 
 void AudioShortcutsService::showMicMute(int percent)
 {
-    KConfigGroup group(m_configWatcher->config(), u"General"_s);
-    if (!group.readEntry(u"MuteOsd"_s, true)) {
+    if (!m_globalConfig->muteOsd()) {
         return;
     }
     m_osdDBusInterface->microphoneVolumeChanged(percent);
