@@ -280,6 +280,7 @@ void AudioShortcutsService::disableGlobalMute()
         }
     }
     m_globalConfig->setGlobalMute(false);
+    m_globalConfig->setGlobalMuteDevices({});
     m_globalConfig->save();
     if (m_sinkModel->preferredSink()) {
         showMute(volumePercent(m_sinkModel->preferredSink()->volume()));
