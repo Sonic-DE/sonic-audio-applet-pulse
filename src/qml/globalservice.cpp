@@ -52,5 +52,5 @@ void GlobalService::ensureKDEDModule()
     QDBusConnection bus = QDBusConnection::sessionBus();
     QDBusMessage invokeMsg = QDBusMessage::createMethodCall(u"org.kde.kded6"_s, u"/kded"_s, u"org.kde.kded6"_s, u"loadModule"_s);
     invokeMsg.setArguments({u"audioshortcutsservice"_s});
-    bus.call(invokeMsg, QDBus::NoBlock);
+    bus.call(invokeMsg, QDBus::Block);
 }
