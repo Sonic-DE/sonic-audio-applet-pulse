@@ -12,6 +12,9 @@
 
 using namespace Qt::Literals::StringLiterals;
 
+constexpr QLatin1String OSD_DBUS_SERVICE = "org.kde.plasmashell"_L1;
+constexpr QLatin1String OSD_DBUS_PATH = "/org/kde/osdService"_L1;
+
 void GlobalService::globalMute()
 {
     invokeShortcut(u"mute"_s);
