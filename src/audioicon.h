@@ -12,7 +12,7 @@
 
 class AudioIcon : public QObject
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_PROPERTY(int HIGH_UPPER_BOUND MEMBER HIGH_UPPER_BOUND CONSTANT)
@@ -20,9 +20,9 @@ public:
     static constexpr int HIGH_UPPER_BOUND = 100;
     static constexpr int VERY_HIGH_UPPER_BOUND = 125;
 
-public Q_SLOTS:
-    static QString forVolume(int volume, bool muted, QString prefix);
-    static QString forFormFactor(QString formFactor);
+public:
+    Q_INVOKABLE static QString forVolume(int volume, bool muted, QString prefix);
+    Q_INVOKABLE static QString forFormFactor(QString formFactor);
 };
 
 #endif // AUDIOICON_H
