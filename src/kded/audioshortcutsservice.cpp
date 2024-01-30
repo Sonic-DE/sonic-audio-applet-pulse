@@ -29,6 +29,17 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     , m_globalConfig(new GlobalConfig(this))
 {
     connect(m_sinkModel, &QPulseAudio::SinkModel::defaultSinkChanged, this, &AudioShortcutsService::handleDefaultSinkChange);
+    connect(m_sinkModel, &QPulseAudio::SinkModel::preferredSinkChanged, this, [this]() {
+        if (!m_sinkModel->preferredSink()) {
+            return;
+        }
+        connect(m_sinkModel->preferredSink(), &QPulseAudio::Sink::volumeChanged, this, [this]() {
+            if (!m_sinkModel->preferredSink()) {
+                return;
+            }
+            showVolume(volumePercent(m_sinkModel->preferredSink()->volume()));
+        });
+    });
     connect(m_sinkModel, &QPulseAudio::SinkModel::rowsInserted, this, &AudioShortcutsService::handleNewSink);
 
     QList<QAction *> actions;
