@@ -12,7 +12,7 @@
 
 class AudioIcon : public QObject
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     Q_PROPERTY(int HIGH_UPPER_BOUND MEMBER HIGH_UPPER_BOUND CONSTANT)
