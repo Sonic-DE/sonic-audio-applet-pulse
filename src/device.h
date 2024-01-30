@@ -15,7 +15,7 @@
 #include "pulseobject.h"
 #include "volumeobject.h"
 
-namespace QPulseAudio
+namespace PulseAudioQt
 {
 class Device : public VolumeObject
 {
@@ -153,6 +153,6 @@ private:
     bool m_virtualDevice = false;
 };
 
-} // QPulseAudio
+} // PulseAudioQt
 
 #endif // DEVICE_H
