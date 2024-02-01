@@ -16,6 +16,7 @@
 #include "pulseobject.h"
 #include "volumeobject.h"
 #include "volumeobject_p.h"
+#include "port_p.h"
 
 namespace PulseAudioQt
 {
@@ -71,10 +72,10 @@ public:
         for (auto **ports = info->ports; ports && *ports != nullptr; ++ports) {
             if (i < m_ports.count()) {
                 Port *port = static_cast<Port *>(m_ports.at(i));
-                portsHaveChanged |= port->setInfo(*ports);
+                port->d->setInfo(*ports);
             } else {
                 Port *port = new Port(this);
-                port->setInfo(*ports);
+                port->d->setInfo(*ports);
                 m_ports.append(port);
                 portsHaveChanged = true;
             }
