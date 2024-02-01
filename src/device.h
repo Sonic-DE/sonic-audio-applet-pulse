@@ -9,6 +9,7 @@
 
 #include <QString>
 
+#include <pulse/proplist.h>
 #include <pulse/volume.h>
 
 #include "port.h"
@@ -21,7 +22,6 @@ class Device : public VolumeObject
 {
     Q_OBJECT
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
-    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
     Q_PROPERTY(QString formFactor READ formFactor NOTIFY formFactorChanged)
     Q_PROPERTY(quint32 cardIndex READ cardIndex NOTIFY cardIndexChanged)
