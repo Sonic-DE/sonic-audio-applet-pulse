@@ -66,7 +66,8 @@ ModuleManager::ModuleManager(QObject *parent)
     connect(m_switchOnConnect, &ConfigModule::subtreeChanged, this, &ModuleManager::switchOnConnectChanged);
     connect(m_deviceManager, &ConfigModule::subtreeChanged, this, &ModuleManager::switchOnConnectChanged);
 
-    connect(Context::instance()->server(), &Server::updated, this, &ModuleManager::serverUpdated);
+    #warning fixme
+    // connect(Context::instance()->server(), &Server::updated, this, &ModuleManager::serverUpdated);
 
     auto *updateModulesTimer = new QTimer(this);
     updateModulesTimer->setInterval(500ms);
