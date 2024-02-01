@@ -324,7 +324,8 @@ QMenu *ListItemMenu::createMenu()
             }
 
             if (switchStreamsAction) {
-                connect(switchStreamsAction, &QAction::triggered, device, &Device::switchStreams);
+                #warning fixme
+                // connect(switchStreamsAction, &QAction::triggered, device, &Device::switchStreams);
             }
         }
 
