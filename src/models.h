@@ -10,32 +10,32 @@
 
 #include <QAbstractListModel>
 
-#include "maps.h"
-#include "sink.h"
-#include "source.h"
+#include "pulseaudioqt_export.h"
 
 namespace PulseAudioQt
 {
 class Context;
+class MapBaseQObject;
+class Sink;
+class Source;
+class AbstractModelPrivate;
+class SinkModelPrivate;
 
-class AbstractModel : public QAbstractListModel
+class PULSEAUDIOQT_EXPORT AbstractModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    enum ItemRole {
-        PulseObjectRole = Qt::UserRole + 1,
-    };
+    enum ItemRole { PulseObjectRole = Qt::UserRole + 1 };
+
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
 
-    Q_ENUM(ItemRole)
-
     ~AbstractModel() override;
-    QHash<int, QByteArray> roleNames() const final;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const final;
+    QHash<int, QByteArray> roleNames() const final override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const final override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    bool setData(const QModelIndex &index, const QVariant &value, int role) final;
+    bool setData(const QModelIndex &index, const QVariant &value, int role) final override;
 
-    int role(const QByteArray &roleName) const;
+    Q_INVOKABLE int role(const QByteArray &roleName) const;
 
 Q_SIGNALS:
     void countChanged();
@@ -53,36 +53,36 @@ private:
     void onDataRemoved(int index);
     QMetaMethod propertyChangedMetaMethod() const;
 
-    const MapBaseQObject *m_map;
-    QHash<int, QByteArray> m_roles;
-    QHash<int, int> m_objectProperties;
-    QHash<int, int> m_signalIndexToProperties;
+    AbstractModelPrivate *d;
 
-private:
     // Prevent leaf-classes from default constructing as we want to enforce
     // them passing us a context or explicit nullptrs.
-    AbstractModel() = default;
+    AbstractModel()
+    {
+    }
 };
 
-class CardModel : public AbstractModel
+class PULSEAUDIOQT_EXPORT CardModel : public AbstractModel
 {
     Q_OBJECT
 public:
-    explicit CardModel(QObject *parent = nullptr);
+    CardModel(QObject *parent = nullptr);
+
+private:
+    void *d;
 };
 
-class SinkModel : public AbstractModel
+class PULSEAUDIOQT_EXPORT SinkModel : public AbstractModel
 {
     Q_OBJECT
     Q_PROPERTY(PulseAudioQt::Sink *defaultSink READ defaultSink NOTIFY defaultSinkChanged)
     Q_PROPERTY(PulseAudioQt::Sink *preferredSink READ preferredSink NOTIFY preferredSinkChanged)
 public:
-    enum ItemRole {
-        SortByDefaultRole = PulseObjectRole + 1,
-    };
+    enum ItemRole { SortByDefaultRole = PulseObjectRole + 1 };
     Q_ENUM(ItemRole)
 
-    explicit SinkModel(QObject *parent = nullptr);
+    SinkModel(QObject *parent = nullptr);
+    virtual ~SinkModel();
     Sink *defaultSink() const;
     Sink *preferredSink() const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -96,54 +96,66 @@ private:
     void sinkRemoved(int index);
     void updatePreferredSink();
     Sink *findPreferredSink() const;
-
-    Sink *m_preferredSink;
+    SinkModelPrivate *d;
 };
 
-class SinkInputModel : public AbstractModel
+class PULSEAUDIOQT_EXPORT SinkInputModel : public AbstractModel
 {
     Q_OBJECT
 public:
-    explicit SinkInputModel(QObject *parent = nullptr);
+    SinkInputModel(QObject *parent = nullptr);
+
+private:
+    void *d;
 };
 
-class SourceModel : public AbstractModel
+class PULSEAUDIOQT_EXPORT SourceModel : public AbstractModel
 {
     Q_OBJECT
     Q_PROPERTY(PulseAudioQt::Source *defaultSource READ defaultSource NOTIFY defaultSourceChanged)
 public:
-    enum ItemRole {
-        SortByDefaultRole = PulseObjectRole + 1,
-    };
+    enum ItemRole { SortByDefaultRole = PulseObjectRole + 1 };
     Q_ENUM(ItemRole)
 
-    explicit SourceModel(QObject *parent = nullptr);
+    SourceModel(QObject *parent = nullptr);
     Source *defaultSource() const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
 Q_SIGNALS:
     void defaultSourceChanged();
+
+private:
+    void *d;
 };
 
-class SourceOutputModel : public AbstractModel
+class PULSEAUDIOQT_EXPORT SourceOutputModel : public AbstractModel
 {
     Q_OBJECT
 public:
-    explicit SourceOutputModel(QObject *parent = nullptr);
+    SourceOutputModel(QObject *parent = nullptr);
+
+private:
+    void *d;
 };
 
-class StreamRestoreModel : public AbstractModel
+class PULSEAUDIOQT_EXPORT StreamRestoreModel : public AbstractModel
 {
     Q_OBJECT
 public:
-    explicit StreamRestoreModel(QObject *parent = nullptr);
+    StreamRestoreModel(QObject *parent = nullptr);
+
+private:
+    void *d;
 };
 
-class ModuleModel : public AbstractModel
+class PULSEAUDIOQT_EXPORT ModuleModel : public AbstractModel
 {
     Q_OBJECT
 public:
-    explicit ModuleModel(QObject *parent = nullptr);
+    ModuleModel(QObject *parent = nullptr);
+
+private:
+    void *d;
 };
 
 } // PulseAudioQt
