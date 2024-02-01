@@ -7,8 +7,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "pulseaudioqt_export.h"
 #include <QObject>
-#include <pulse/introspect.h>
 
 namespace PulseAudioQt
 {
@@ -16,12 +16,12 @@ class Sink;
 class Source;
 class Context;
 
-class Server : public QObject
+class PULSEAUDIOQT_EXPORT Server : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Server(Context *context);
+    ~Server();
 
     Sink *defaultSink() const;
     void setDefaultSink(Sink *sink);
@@ -29,24 +29,27 @@ public:
     Source *defaultSource() const;
     void setDefaultSource(Source *source);
 
-    void reset();
-    void update(const pa_server_info *info);
-
+    /**
+     * Whether PulseAudio is provided via pipewire-pulse.
+     */
     bool isPipeWire() const;
 
 Q_SIGNALS:
-    void defaultSinkChanged(Sink *sink);
-    void defaultSourceChanged(Source *source);
-    void updated();
+    void defaultSinkChanged(PulseAudioQt::Sink *sink);
+    void defaultSourceChanged(PulseAudioQt::Source *source);
+    void isPipeWireChanged();
 
 private:
+    explicit Server(Context *context);
+
+    void reset();
     void updateDefaultDevices();
 
-    QString m_defaultSinkName;
-    QString m_defaultSourceName;
-    Sink *m_defaultSink = nullptr;
-    Source *m_defaultSource = nullptr;
-    bool m_isPipeWire = false;
+    class ServerPrivate *const d;
+
+    friend class ServerPrivate;
+    friend class Context;
+    friend class ContextPrivate;
 };
 
 } // PulseAudioQt

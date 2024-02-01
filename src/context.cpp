@@ -586,7 +586,7 @@ void ContextPrivate::streamRestoreCallback(const pa_ext_stream_restore_info *inf
 
 void ContextPrivate::serverCallback(const pa_server_info *info)
 {
-    m_server->update(info);
+    m_server->d->update(info);
 }
 
 void Context::setCardProfile(quint32 index, const QString &profile)
