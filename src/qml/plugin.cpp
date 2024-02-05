@@ -69,7 +69,7 @@ void Plugin::registerTypes(const char *uri)
         Q_UNUSED(jsEngine);
         return new MicrophoneIndicator();
     });
-    qmlRegisterSingletonType<MicrophoneIndicator>(uri, 0, 1, "PreferredStream", [](QQmlEngine *engine, QJSEngine *jsEngine) -> QObject * {
+    qmlRegisterSingletonType<PreferredStream>(uri, 0, 1, "PreferredStream", [](QQmlEngine *engine, QJSEngine *jsEngine) -> QObject * {
         Q_UNUSED(engine);
         Q_UNUSED(jsEngine);
         // Create on-call to not create a Context instance too early.
