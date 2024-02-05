@@ -36,11 +36,59 @@ PlasmoidItem {
     property int volumePercentStep: config.volumeStep
     property string displayName: i18n("Audio Volume")
     property QtObject draggedStream: null
+    property bool initalDefaultSinkIsSet: false
 
     Connections {
-        target: paSinkModel.preferredSink
+        target: PreferredDevice.sink
         function onVolumeChanged() {
-            osd.showVolume(volumePercent(paSinkModel.preferredSink.volume))
+            osd.showVolume(volumePercent(PreferredDevice.sink.volume))
+        }
+    }
+
+    Connections {
+        target: Server
+
+        function onDefaultSinkChanged() {
+            if (!Server.defaultSink || !config.defaultOutputDeviceOsd) {
+                return;
+            }
+
+            // avoid showing a OSD on startup
+            if (!initalDefaultSinkIsSet) {
+                initalDefaultSinkIsSet = true;
+                return;
+            }
+
+            var description = nodeName(Server.defaultSink);
+            if (isDummyOutput(Server.defaultSink)) {
+                description = i18n("No output device");
+            } else {
+                const cardModelIdx = paCardModel.indexOfCardNumber(Server.defaultSink.cardIndex);
+                if (cardModelIdx.valid) {
+                    const cardProperties = paCardModel.data(cardModelIdx, paCardModel.KItemModels.KRoleNames.role("Properties"));
+                    const cardBluetoothBattery = cardProperties["bluetooth.battery"];
+                    // This property is returned as a string with percent sign,
+                    // parse it into an int in case they change it to a number later.
+                    const batteryInt = parseInt(cardBluetoothBattery, 10);
+
+                    if (!isNaN(batteryInt)) {
+                        description = i18nc("Device name (Battery percent)", "%1 (%2% Battery)", description, batteryInt);
+                    }
+                }
+            }
+
+            var icon = Icon.formFactorIcon(Server.defaultSink.formFactor);
+            if (!icon) {
+                // Show "muted" icon for Dummy output
+                if (isDummyOutput(Server.defaultSink)) {
+                    icon = "audio-volume-muted";
+                }
+            }
+
+            if (!icon) {
+                icon = Icon.name(Server.defaultSink.volume, Server.defaultSink.muted);
+            }
+            osd.showText(icon, description);
         }
     }
 
@@ -53,10 +101,10 @@ PlasmoidItem {
     switchHeight: Layout.minimumHeight
     switchWidth: Layout.minimumWidth
 
-    Plasmoid.icon: paSinkModel.preferredSink && !isDummyOutput(paSinkModel.preferredSink) ? Icon.name(paSinkModel.preferredSink.volume, paSinkModel.preferredSink.muted)
+    Plasmoid.icon: PreferredDevice.sink && !isDummyOutput(PreferredDevice.sink) ? Icon.name(PreferredDevice.sink.volume, PreferredDevice.sink.muted)
                                                                                           : Icon.name(0, true)
     toolTipMainText: {
-        var sink = paSinkModel.preferredSink;
+        var sink = PreferredDevice.sink;
         if (!sink || isDummyOutput(sink)) {
             return displayName;
         }
@@ -70,8 +118,8 @@ PlasmoidItem {
     toolTipSubText: {
         let lines = [];
 
-        if (paSinkModel.preferredSink && paSinkFilterModel.count > 1 && !isDummyOutput(paSinkModel.preferredSink)) {
-            lines.push(nodeName(paSinkModel.preferredSink))
+        if (PreferredDevice.sink && paSinkFilterModel.count > 1 && !isDummyOutput(PreferredDevice.sink)) {
+            lines.push(nodeName(PreferredDevice.sink))
         }
 
         if (paSinkFilterModel.count > 0) {
@@ -127,10 +175,10 @@ PlasmoidItem {
 
     // Increment the preferredSink by %volume.
     function changeSpeakerVolume(deltaPercent) {
-        if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
+        if (!PreferredDevice.sink || isDummyOutput(PreferredDevice.sink)) {
             return;
         }
-        const newPercent = changeVolumeByPercent(paSinkModel.preferredSink, deltaPercent);
+        const newPercent = changeVolumeByPercent(PreferredDevice.sink, deltaPercent);
         osd.showVolume(newPercent);
         playFeedback();
     }
@@ -150,10 +198,10 @@ PlasmoidItem {
     }
 
     function muteVolume() {
-        if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
+        if (!PreferredDevice.sink || isDummyOutput(PreferredDevice.sink)) {
             return;
         }
-        var toMute = !paSinkModel.preferredSink.muted;
+        var toMute = !PreferredDevice.sink.muted;
         if (toMute) {
             enableGlobalMute();
             osd.showMute(0);
@@ -161,8 +209,8 @@ PlasmoidItem {
             if (globalMute) {
                 disableGlobalMute();
             }
-            paSinkModel.preferredSink.muted = toMute;
-            osd.showMute(volumePercent(paSinkModel.preferredSink.volume));
+            PreferredDevice.sink.muted = toMute;
+            osd.showMute(volumePercent(PreferredDevice.sink.volume));
             playFeedback();
         }
     }
@@ -198,7 +246,7 @@ PlasmoidItem {
             return;
         }
         if (sinkIndex == undefined) {
-            sinkIndex = paSinkModel.preferredSink.index;
+            sinkIndex = PreferredDevice.sink.index;
         }
         feedback.play(sinkIndex);
     }
@@ -242,51 +290,6 @@ PlasmoidItem {
     // Output devices
     readonly property SinkModel paSinkModel: SinkModel {
         id: paSinkModel
-
-        property bool initalDefaultSinkIsSet: false
-
-        onDefaultSinkChanged: {
-            if (!defaultSink || !config.defaultOutputDeviceOsd) {
-                return;
-            }
-
-            // avoid showing a OSD on startup
-            if (!initalDefaultSinkIsSet) {
-                initalDefaultSinkIsSet = true;
-                return;
-            }
-
-            var description = nodeName(defaultSink);
-            if (isDummyOutput(defaultSink)) {
-                description = i18n("No output device");
-            } else {
-                const cardModelIdx = paCardModel.indexOfCardNumber(defaultSink.cardIndex);
-                if (cardModelIdx.valid) {
-                    const cardProperties = paCardModel.data(cardModelIdx, paCardModel.KItemModels.KRoleNames.role("Properties"));
-                    const cardBluetoothBattery = cardProperties["bluetooth.battery"];
-                    // This property is returned as a string with percent sign,
-                    // parse it into an int in case they change it to a number later.
-                    const batteryInt = parseInt(cardBluetoothBattery, 10);
-
-                    if (!isNaN(batteryInt)) {
-                        description = i18nc("Device name (Battery percent)", "%1 (%2% Battery)", description, batteryInt);
-                    }
-                }
-            }
-
-            var icon = Icon.formFactorIcon(defaultSink.formFactor);
-            if (!icon) {
-                // Show "muted" icon for Dummy output
-                if (isDummyOutput(defaultSink)) {
-                    icon = "audio-volume-muted";
-                }
-            }
-
-            if (!icon) {
-                icon = Icon.name(defaultSink.volume, defaultSink.muted);
-            }
-            osd.showText(icon, description);
-        }
 
         onRowsInserted: {
             if (globalMute) {

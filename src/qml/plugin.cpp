@@ -15,6 +15,7 @@
 #include "modulemanager.h"
 #include "port.h"
 #include "profile.h"
+#include "server.h"
 #include "sink.h"
 #include "source.h"
 #include "volumemonitor.h"
@@ -23,6 +24,7 @@
 #include "globalconfig.h"
 #include "listitemmenu.h"
 #include "microphoneindicator.h"
+#include "preferreddevice.h"
 #include "speakertest.h"
 #include "volumefeedback.h"
 #include "volumeosd.h"
@@ -67,6 +69,17 @@ void Plugin::registerTypes(const char *uri)
         Q_UNUSED(engine);
         Q_UNUSED(jsEngine);
         return new MicrophoneIndicator();
+    });
+    qmlRegisterSingletonType<PreferredDevice>(uri, 0, 1, "PreferredDevice", [](QQmlEngine *engine, QJSEngine *jsEngine) -> QObject * {
+        Q_UNUSED(engine);
+        Q_UNUSED(jsEngine);
+        // Create on-call to not create a Context instance too early.
+        return new PreferredDevice;
+    });
+    qmlRegisterSingletonType<PulseAudioQt::Server>(uri, 0, 1, "Server", [](QQmlEngine *engine, QJSEngine *jsEngine) -> QObject * {
+        Q_UNUSED(engine);
+        Q_UNUSED(jsEngine);
+        return PulseAudioQt::Context::instance()->server();
     });
     qmlRegisterAnonymousType<PulseAudioQt::Client>(uri, 1);
     qmlRegisterAnonymousType<PulseAudioQt::Sink>(uri, 1);
