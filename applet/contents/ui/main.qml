@@ -38,9 +38,9 @@ PlasmoidItem {
     property QtObject draggedStream: null
 
     Connections {
-        target: paSinkModel.preferredSink
+        target: PreferredStream.sink
         function onVolumeChanged() {
-            osd.showVolume(volumePercent(paSinkModel.preferredSink.volume))
+            osd.showVolume(volumePercent(PreferredStream.sink.volume))
         }
     }
 
@@ -53,10 +53,10 @@ PlasmoidItem {
     switchHeight: Layout.minimumHeight
     switchWidth: Layout.minimumWidth
 
-    Plasmoid.icon: paSinkModel.preferredSink && !isDummyOutput(paSinkModel.preferredSink) ? Icon.name(paSinkModel.preferredSink.volume, paSinkModel.preferredSink.muted)
+    Plasmoid.icon: PreferredStream.sink && !isDummyOutput(PreferredStream.sink) ? Icon.name(PreferredStream.sink.volume, PreferredStream.sink.muted)
                                                                                           : Icon.name(0, true)
     toolTipMainText: {
-        var sink = paSinkModel.preferredSink;
+        var sink = PreferredStream.sink;
         if (!sink || isDummyOutput(sink)) {
             return displayName;
         }
@@ -70,14 +70,14 @@ PlasmoidItem {
     toolTipSubText: {
         let lines = [];
 
-        if (paSinkModel.preferredSink && paSinkFilterModel.count > 1 && !isDummyOutput(paSinkModel.preferredSink)) {
-            var port = paSinkModel.preferredSink.ports[paSinkModel.preferredSink.activePortIndex];
+        if (PreferredStream.sink && paSinkFilterModel.count > 1 && !isDummyOutput(PreferredStream.sink)) {
+            var port = PreferredStream.sink.ports[PreferredStream.sink.activePortIndex];
             if (port) {
                 lines.push(port.description);
-            } else if (paSinkModel.preferredSink.description) {
-                lines.push(paSinkModel.preferredSink.description);
+            } else if (PreferredStream.sink.description) {
+                lines.push(PreferredStream.sink.description);
             } else {
-            lines.push(paSinkModel.preferredSink.name);
+            lines.push(PreferredStream.sink.name);
             }
         }
 
@@ -117,10 +117,10 @@ PlasmoidItem {
 
     // Increment the preferredSink by %volume.
     function changeSpeakerVolume(deltaPercent) {
-        if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
+        if (!PreferredStream.sink || isDummyOutput(PreferredStream.sink)) {
             return;
         }
-        const newPercent = changeVolumeByPercent(paSinkModel.preferredSink, deltaPercent);
+        const newPercent = changeVolumeByPercent(PreferredStream.sink, deltaPercent);
         osd.showVolume(newPercent);
         playFeedback();
     }
@@ -140,10 +140,10 @@ PlasmoidItem {
     }
 
     function muteVolume() {
-        if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
+        if (!PreferredStream.sink || isDummyOutput(PreferredStream.sink)) {
             return;
         }
-        var toMute = !paSinkModel.preferredSink.muted;
+        var toMute = !PreferredStream.sink.muted;
         if (toMute) {
             enableGlobalMute();
             osd.showMute(0);
@@ -151,8 +151,8 @@ PlasmoidItem {
             if (globalMute) {
                 disableGlobalMute();
             }
-            paSinkModel.preferredSink.muted = toMute;
-            osd.showMute(volumePercent(paSinkModel.preferredSink.volume));
+            PreferredStream.sink.muted = toMute;
+            osd.showMute(volumePercent(PreferredStream.sink.volume));
             playFeedback();
         }
     }
@@ -188,7 +188,7 @@ PlasmoidItem {
             return;
         }
         if (sinkIndex == undefined) {
-            sinkIndex = paSinkModel.preferredSink.index;
+            sinkIndex = PreferredStream.sink.index;
         }
         feedback.play(sinkIndex);
     }
