@@ -37,6 +37,7 @@ target_sources(plasma-volume-declarative PRIVATE
     qml/microphoneindicator.cpp
     qml/volumeosd.cpp
     qml/volumefeedback.cpp
+    qml/preferreddevice.cpp
 )
 
 add_subdirectory(pipewireqt)
