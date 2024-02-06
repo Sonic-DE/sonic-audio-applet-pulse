@@ -170,6 +170,28 @@ int AudioShortcutsService::volumePercent(qint64 volume)
     return std::round((double)volume / QPulseAudio::Context::NormalVolume * 100.0);
 }
 
+QString AudioShortcutsService::nameForDevice(const QPulseAudio::Device *device)
+{
+    if (!device) {
+        return i18n("No such device");
+    }
+
+    const QString nodeNick = device->pulseProperties()["node.nick"].toString();
+    if (!nodeNick.isEmpty()) {
+        return nodeNick;
+    }
+
+    if (!device->description().isEmpty()) {
+        return device->description();
+    }
+
+    if (!device->name().isEmpty()) {
+        return device->name();
+    }
+
+    return i18n("Device name not found");
+}
+
 int AudioShortcutsService::changeVolumePercent(QPulseAudio::Device *device, int deltaPercent)
 {
     const qint64 oldVolume = device->volume();
@@ -197,7 +219,7 @@ void AudioShortcutsService::handleDefaultSinkChange()
     if (!defaultSink) {
         return;
     }
-    QString description = defaultSink->description();
+    QString description = nameForDevice(defaultSink);
     if (defaultSink->name() == DUMMY_OUTPUT_NAME) {
         description = i18n("No output device");
     } else {
