@@ -26,8 +26,9 @@ public:
     AudioShortcutsService(QObject *parent, const QList<QVariant> &);
 
 private:
-    qint64 boundVolume(qint64 volume, int maxVolume);
-    int volumePercent(qint64 volume);
+    static qint64 boundVolume(qint64 volume, int maxVolume);
+    static int volumePercent(qint64 volume);
+    static QString nameForDevice(const QPulseAudio::Device *device);
     int changeVolumePercent(QPulseAudio::Device *device, int deltaPercent);
     void handleDefaultSinkChange();
     void handleNewSink();
