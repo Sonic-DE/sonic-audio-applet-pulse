@@ -61,18 +61,11 @@ PC3.Slider {
     // on scroll and allow fine-tuning on drag.
     // So we have to implement the scroll handling ourselves. See
     // https://bugreports.qt.io/browse/QTBUG-93081
-    MouseArea {
+    WheelHandler {
+        orientation: Qt.Vertical | Qt.Horizontal
         property int wheelDelta: 0
-
-        anchors {
-            fill: parent
-            leftMargin: control.leftPadding
-            rightMargin: control.rightPadding
-        }
-        LayoutMirroring.enabled: false
-
         acceptedButtons: Qt.NoButton
-
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
         onWheel: wheel => {
             const lastValue = control.value
             // We want a positive delta to increase the slider for up/right scrolling,
@@ -81,7 +74,7 @@ PC3.Slider {
             const delta = (wheel.angleDelta.y || -wheel.angleDelta.x) * (wheel.inverted ? -1 : 1)
             wheelDelta += delta;
             // magic number 120 for common "one click"
-            // See: https://doc.qt.io/qt-5/qml-qtquick-wheelevent.html#angleDelta-prop
+            // See: https://doc.qt.io/qt-6/qml-qtquick-wheelevent.html#angleDelta-prop
             while (wheelDelta >= 120) {
                 wheelDelta -= 120;
                 control.increase();
@@ -93,7 +86,7 @@ PC3.Slider {
             if (lastValue !== control.value) {
                 control.moved();
             }
-        }
+        }     
     }
 
     background: KSvg.FrameSvgItem {
