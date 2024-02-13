@@ -39,6 +39,8 @@ target_sources(plasma-volume-declarative PRIVATE
     qml/volumefeedback.cpp
 )
 
+add_subdirectory(pipewireqt)
+
 ecm_target_qml_sources(plasma-volume-declarative VERSION 0.1 SOURCES
     qml/PulseObjectFilterModel.qml
 )

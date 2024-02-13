@@ -27,6 +27,8 @@
 #include "volumefeedback.h"
 #include "volumeosd.h"
 
+#include "pipewireqt/context.h"
+
 static QJSValue pulseaudio_singleton(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
@@ -41,6 +43,8 @@ static QJSValue pulseaudio_singleton(QQmlEngine *engine, QJSEngine *scriptEngine
 void Plugin::registerTypes(const char *uri)
 {
     PulseAudioQt::Context::setApplicationId(QStringLiteral("org.kde.plasma-pa"));
+
+    static PipeWireQt::Context c;
 
     qmlRegisterType<PulseAudioQt::CardModel>(uri, 0, 1, "CardModel");
     qmlRegisterType<PulseAudioQt::SinkModel>(uri, 0, 1, "SinkModel");

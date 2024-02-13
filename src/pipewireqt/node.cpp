@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+// SPDX-FileCopyrightText: 2024 Harald Sitter <sitter@kde.org>
+
+#include "node.h"
+
+#include <pipewire/node.h>
+
+namespace PipeWireQt
+{
+
+class NodePrivate
+{
+};
+
+Node::Node(QObject *parent)
+    : QObject(parent)
+    , d(std::make_unique<NodePrivate>())
+{
+}
+
+Node::~Node() = default;
+
+} // namespace PipeWireQt
