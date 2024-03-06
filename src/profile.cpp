@@ -14,6 +14,7 @@ Profile::Profile(QObject *parent)
     , m_description()
     , m_priority(0)
     , m_availability(Unknown)
+    , m_inactive(true)
 {
 }
 
@@ -37,6 +38,11 @@ quint32 Profile::priority() const
 Profile::Availability Profile::availability() const
 {
     return m_availability;
+}
+
+bool Profile::inactive() const
+{
+    return m_inactive;
 }
 
 } // QPulseAudio

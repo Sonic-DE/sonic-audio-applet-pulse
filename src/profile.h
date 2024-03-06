@@ -19,6 +19,7 @@ class Profile : public QObject
     Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
     Q_PROPERTY(quint32 priority READ priority NOTIFY priorityChanged)
     Q_PROPERTY(Availability availability READ availability NOTIFY availabilityChanged)
+    Q_PROPERTY(bool inactive READ inactive NOTIFY inactiveChanged)
 public:
     enum Availability {
         Unknown,
@@ -40,12 +41,14 @@ public:
     QString description() const;
     quint32 priority() const;
     Availability availability() const;
+    bool inactive() const;
 
 Q_SIGNALS:
     void nameChanged();
     void descriptionChanged();
     void priorityChanged();
     void availabilityChanged();
+    void inactiveChanged();
 
 protected:
     template<typename PAInfo>
@@ -81,6 +84,15 @@ protected:
             changed = true;
         }
 
+        if constexpr (std::is_same<PAInfo, struct pa_card_profile_info2>::value) {
+            const bool newInactive = (info->n_sinks + info->n_sources == 0);
+            if (m_inactive != newInactive) {
+                m_inactive = newInactive;
+                Q_EMIT inactiveChanged();
+                changed = true;
+            }
+        }
+
         return changed;
     }
 
@@ -89,6 +101,7 @@ private:
     QString m_description;
     quint32 m_priority;
     Availability m_availability;
+    int m_inactive;
 };
 
 } // QPulseAudio
