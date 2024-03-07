@@ -153,6 +153,21 @@ PlasmoidItem {
         if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
             return;
         }
+
+        var toMute = !paSinkModel.preferredSink.muted;
+        paSinkModel.preferredSink.muted = toMute;
+        if (toMute) {
+            osd.showMute(0);
+        } else {
+            osd.showMute(volumePercent(paSinkModel.preferredSink.volume));
+            playFeedback();
+        }
+    }
+
+    function globalMuteVolume() {
+        if (!paSinkModel.preferredSink || isDummyOutput(paSinkModel.preferredSink)) {
+            return;
+        }
         var toMute = !paSinkModel.preferredSink.muted;
         if (toMute) {
             enableGlobalMute();
@@ -441,8 +456,13 @@ PlasmoidItem {
         GlobalAction {
             objectName: "mute"
             text: i18n("Mute")
-            shortcut: Qt.Key_VolumeMute
             onTriggered: muteVolume()
+        }
+        GlobalAction {
+            objectName: "globalMute"
+            text: i18n("Mute All")
+            shortcut: Qt.Key_VolumeMute
+            onTriggered: globalMuteVolume()
         }
         GlobalAction {
             objectName: "increase_microphone_volume"
