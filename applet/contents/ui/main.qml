@@ -193,6 +193,39 @@ PlasmoidItem {
         osd.showMicMute(toMute? 0 : volumePercent(paSourceModel.defaultSource.volume));
     }
 
+    function changeSink(direction) {
+        var nextIndex = 0
+        for (var i = 0; i < paSinkFilterModel.count; i++) {
+            if (paSinkFilterModel.get(i).PulseObject.default)
+            {
+                if (direction == "next" && i < paSinkFilterModel.count) {
+                    nextIndex = i + 1
+                } else if (direction == "previous" && i > 0) {
+                    nextIndex = i - 1
+                }
+                paSinkFilterModel.get(nextIndex).PulseObject.default = true
+                break;
+            }
+        }
+    }
+
+    function changeSource(direction) {
+        var nextIndex = 0
+        for (var i = 0; i < paSourceFilterModel.count; i++) {
+            //should return true if the index is default
+            if (paSourceFilterModel.get(i).PulseObject.default)
+            {
+                if (direction == "next" && i < paSourceFilterModel.count ) {
+                    nextIndex = i + 1
+                } else if (direction == "previous" && i > 0) {
+                    nextIndex = i - 1
+                }
+                paSourceFilterModel.get(nextIndex).PulseObject.default = true
+                break;
+            }
+        }
+    }
+
     function playFeedback(sinkIndex) {
         if (!volumeFeedback) {
             return;
@@ -202,7 +235,6 @@ PlasmoidItem {
         }
         feedback.play(sinkIndex);
     }
-
 
     function enableGlobalMute() {
         var role = paSinkModel.KItemModels.KRoleNames.role("Muted");
@@ -302,7 +334,32 @@ PlasmoidItem {
     }
 
     // Input devices
-    readonly property SourceModel paSourceModel: SourceModel { id: paSourceModel }
+    readonly property SourceModel paSourceModel: SourceModel {
+        id: paSourceModel
+
+        property bool initalDefaultSourceIsSet: false
+
+        onDefaultSourceChanged: {
+            // avoid showing a OSD on startup
+            if (!initalDefaultSourceIsSet) {
+                initalDefaultSourceIsSet = true;
+                return;
+            }
+            var description = defaultSource.description;
+            var icon = Icon.formFactorIcon(defaultSource.formFactor);
+            if (!icon) {
+                // Show "muted" icon for Dummy output
+                if (isDummyOutput(defaultSource)) {
+                    icon = "microphone-sensitivity-muted";
+                }
+            }
+
+            if (!icon) {
+                icon = Icon.name(defaultSource.volume, false, "microphone-sensitivity");
+            }
+            osd.showText(icon, description);
+        }
+    }
 
     // Confusingly, Sink Input is what PulseAudio calls streams that send audio to an output device
     readonly property SinkInputModel paSinkInputModel: SinkInputModel { id: paSinkInputModel }
@@ -447,13 +504,13 @@ PlasmoidItem {
         GlobalAction {
             objectName: "increase_microphone_volume"
             text: i18n("Increase Microphone Volume")
-            shortcut: Qt.Key_MicVolumeUp
+            shortcuts: [Qt.Key_MicVolumeUp, Qt.MetaModifier | Qt.Key_VolumeUp]
             onTriggered: increaseMicrophoneVolume()
         }
         GlobalAction {
             objectName: "decrease_microphone_volume"
             text: i18n("Decrease Microphone Volume")
-            shortcut: Qt.Key_MicVolumeDown
+            shortcuts: [Qt.Key_MicVolumeDown, Qt.MetaModifier | Qt.Key_VolumeDown]
             onTriggered: decreaseMicrophoneVolume()
         }
         GlobalAction {
@@ -461,6 +518,31 @@ PlasmoidItem {
             text: i18n("Mute Microphone")
             shortcuts: [Qt.Key_MicMute, Qt.MetaModifier | Qt.Key_VolumeMute]
             onTriggered: muteMicrophone()
+        }
+        //Add sink switches
+        GlobalAction {
+            objectName: "next_sink"
+            text: i18n("Next Output Device")
+            shortcut: Qt.ControlModifier | Qt.Key_VolumeUp
+            onTriggered: changeSink("next")
+        }
+        GlobalAction {
+            objectName: "previous_sink"
+            text: i18n("Previous Output Device")
+            shortcut: Qt.ControlModifier | Qt.Key_VolumeDown
+            onTriggered: changeSink("previous")
+        }
+        GlobalAction {
+            objectName: "next_source"
+            text: i18n("Next Input Device")
+            shortcut: Qt.AltModifier | Qt.Key_VolumeUp
+            onTriggered: changeSource("next")
+        }
+        GlobalAction {
+            objectName: "previous_source"
+            text: i18n("Previous Input Device")
+            shortcut: Qt.AltModifier | Qt.Key_VolumeDown
+            onTriggered: changeSource("previous")
         }
     }
 
