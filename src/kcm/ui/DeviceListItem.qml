@@ -161,7 +161,7 @@ ColumnLayout {
                 text: i18ndc("kcm_pulseaudio", "@info:tooltip", "Change PipeWire profile."
                                                                 "<nl/>These are defined by your device through ALSA and PulseAudio to expose and drive different combinations of channels. "
                                                                 "Analog profiles are the correct choice for most devices. Digital profiles are meant for use with a receiver through S/PDIF or HDMI. "
-                                                                "The \"Pro Audio\" profile is defined by PulseAudio and is meant for more complicated hardware setups with many channels, allowing more advanced manual control.")
+                                                                "The \"Pro Audio\" profile is defined by PipeWire and is meant for more complicated hardware setups with many channels, allowing more advanced manual control.")
                 visible: parent.visible
             }
         }
