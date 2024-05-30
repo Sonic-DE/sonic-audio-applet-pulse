@@ -172,11 +172,22 @@ KCM.ScrollViewKCM {
                 Layout.preferredHeight: contentHeight
                 interactive: false
                 spacing: Kirigami.Units.largeSpacing
-                model: inactiveDevicesSwitch.checked || !inactiveDevicesSwitch.visible ? paSourceModel : paSourceFilterModel
+
+                //![FL] Loading the model here will cause plasma-settings to crash when loading the sound plugin
+                //model: inactiveDevicesSwitch.checked || !inactiveDevicesSwitch.visible ? paSourceModel : paSourceFilterModel
+                //![FL]
+
                 delegate: DeviceListItem {
                     isPlayback: false
                     comboBoxLabelsVisible: column.comboBoxLabelsVisible
                 }
+
+                //![FL] loading the model until the component is complete to avoid plasma-settings loading crash
+                Component.onCompleted:
+                {
+                    model = Qt.binding(function(){ return inactiveDevicesSwitch.checked || !inactiveDevicesSwitch.visible ? paSourceModel : paSourceFilterModel })
+                }
+                //![FL]
             }
 
             Kirigami.ListSectionHeader {
