@@ -36,7 +36,8 @@ static QJSValue pulseaudio_singleton(QQmlEngine *engine, QJSEngine *scriptEngine
     QJSValue object = scriptEngine->newObject();
     object.setProperty(QStringLiteral("NormalVolume"), (double)PulseAudioQt::normalVolume());
     object.setProperty(QStringLiteral("MinimalVolume"), (double)PulseAudioQt::minimumVolume());
-    object.setProperty(QStringLiteral("MaximalVolume"), (double)PulseAudioQt::maximumUIVolume());
+    // Set the maximum extended volume to 150%. Otherwise we'll get 153% (11dB)
+    object.setProperty(QStringLiteral("MaximalVolume"), (double)PulseAudioQt::normalVolume() * 1.5);
     return object;
 }
 
