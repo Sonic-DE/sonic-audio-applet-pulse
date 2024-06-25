@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+// SPDX-FileCopyrightText: 2024 Harald Sitter <sitter@kde.org>
+
+#pragma once
+
+#include <QDir>
+#include <QObject>
+
+#include "devicerenamemodel.h"
+
+class DeviceRenameSaver : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QList<DeviceRenameModel *> models WRITE setModels NOTIFY modelsChanged REQUIRED)
+    Q_PROPERTY(bool busy MEMBER m_busy NOTIFY busyChanged)
+    Q_PROPERTY(QString error MEMBER m_error NOTIFY errorChanged)
+public:
+    explicit DeviceRenameSaver(QObject *parent = nullptr);
+    void setModels(QList<DeviceRenameModel *> models);
+    [[nodiscard]] bool containsOverride(const QString &name) const;
+    [[nodiscard]] QVariantMap override(const QString &name) const;
+    void insertOverride(const QString &name, const QVariantMap &override);
+    void removeOverride(const QString &name);
+
+Q_SIGNALS:
+    void modelsChanged();
+    void busyChanged();
+    void errorChanged();
+
+public Q_SLOTS:
+    void saveChanges();
+
+private:
+    static QHash<QString, QVariantMap> readOverrides();
+    void restartWirePlumber();
+
+    QList<DeviceRenameModel *> m_models;
+    QHash<QString, QVariantMap> m_overrides = readOverrides();
+    QString m_error;
+    bool m_busy = false; // happens when we have data reloading pending
+    QTimer m_readyTimer;
+};
