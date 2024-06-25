@@ -77,6 +77,11 @@ KCM.ScrollViewKCM {
             }
         },
         Kirigami.Action {
+            icon.name: "edit-rename-symbolic"
+            text: i18nd("kcm_pulseaudio", "Rename Devices…")
+            onTriggered: kcm.push("RenameDevices.qml")
+        },
+        Kirigami.Action {
             icon.name: "configure"
             text: i18nd("kcm_pulseaudio", "Configure Volume Controls…")
             onTriggered: kcm.push("VolumeControlsConfig.qml", { "config": config })
