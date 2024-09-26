@@ -18,6 +18,7 @@ set(plasma-volume_SRCS
     devicerenamemodel.cpp
     devicenamesourcemodel.cpp
     devicerenamesaver.cpp
+    percentvalidator.cpp
 )
 
 add_library(plasma-volume

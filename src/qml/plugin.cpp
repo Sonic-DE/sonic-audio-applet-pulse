@@ -30,6 +30,7 @@
 #include "globalservice.h"
 #include "listitemmenu.h"
 #include "microphoneindicator.h"
+#include "percentvalidator.h"
 #include "speakertest.h"
 #include "volumefeedback.h"
 
@@ -76,6 +77,7 @@ void Plugin::registerTypes(const char *uri)
     qmlRegisterType<DeviceRenameModel>(uri, 0, 1, "DeviceRenameModel");
     qmlRegisterType<DeviceRenameSaver>(uri, 0, 1, "DeviceRenameSaver");
     qmlRegisterType<DeviceNameSourceModel>(uri, 0, 1, "DeviceNameSourceModel");
+    qmlRegisterType<PercentValidator>(uri, 0, 1, "PercentValidator");
     qmlRegisterSingletonType(uri, 0, 1, "PulseAudio", pulseaudio_singleton);
     qmlRegisterSingletonType<MicrophoneIndicator>(uri, 0, 1, "MicrophoneIndicator", [](QQmlEngine *engine, QJSEngine *jsEngine) -> QObject * {
         Q_UNUSED(engine);
