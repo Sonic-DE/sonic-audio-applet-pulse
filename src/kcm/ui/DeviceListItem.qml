@@ -47,9 +47,9 @@ ColumnLayout {
             onClicked: Default = true
             text: {
                 const propertiesKey = deviceNameSourceModel.valueToProperty(config.deviceNameSource)
-                const nodeNick = pulseObject.pulseProperties[propertiesKey]
-                if (nodeNick) {
-                    return nodeNick;
+                const preferredProperty = pulseObject.pulseProperties[propertiesKey]
+                if (preferredProperty) {
+                    return preferredProperty
                 }
 
                 if (pulseObject.description) {

@@ -26,7 +26,7 @@ KCM.ScrollViewKCM {
                                                         'alsa.card_name',
                                                         'alsa.long_card_name',
                                                         'device.name']
-    property string defaultKey: 'node.nick'
+    property string defaultKey: 'device.description'
 
     title: i18nc("@title rename audio devices", "Rename Devices")
     implicitHeight: Kirigami.Units.gridUnit * 28

@@ -62,5 +62,5 @@ QString DeviceNameSourceModel::valueToProperty(int value)
     }
 
     Q_ASSERT_X(false, Q_FUNC_INFO, "Unexpected enum entry");
-    return u"node.nick"_s;
+    return u"device.description"_s;
 }
