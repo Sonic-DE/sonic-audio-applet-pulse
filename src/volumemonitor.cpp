@@ -15,7 +15,7 @@
 #include <PulseAudioQt/SourceOutput>
 #include <PulseAudioQt/VolumeObject>
 
-#include "debug.h"
+#include "plasmapa_debug.h"
 
 #include <QtGlobal>
 
@@ -136,12 +136,12 @@ void VolumeMonitor::createStream()
 
     auto context = Context::instance()->context();
     if (!context) {
-        qCWarning(PLASMAPA) << "Failed to create stream - no context available";
+        qCWarning(PLASMAPA_LOG) << "Failed to create stream - no context available";
         return;
     }
 
     if (!(m_stream = pa_stream_new(context, "PlasmaPA-VolumeMeter", &ss, nullptr))) {
-        qCWarning(PLASMAPA) << "Failed to create stream";
+        qCWarning(PLASMAPA_LOG) << "Failed to create stream";
         return;
     }
 
@@ -177,7 +177,7 @@ void VolumeMonitor::read_callback(pa_stream *s, size_t length, void *userdata)
     double volume;
 
     if (pa_stream_peek(s, &data, &length) < 0) {
-        qCWarning(PLASMAPA) << "Failed to read data from stream";
+        qCWarning(PLASMAPA_LOG) << "Failed to read data from stream";
         return;
     }
 

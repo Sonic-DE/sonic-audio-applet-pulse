@@ -1,5 +1,9 @@
 add_definitions(-DTRANSLATION_DOMAIN=\"kcm_pulseaudio\")
 
+
+ecm_qt_declare_logging_category(plasma-volume_debug_SRCS HEADER plasmapa_debug.h IDENTIFIER PLASMAPA_LOG CATEGORY_NAME log_plasmapa DESCRIPTION "Plasma pa" EXPORT PLASMAPA)
+
+
 ecm_add_qml_module(plasma-volume-declarative URI org.kde.plasma.private.volume)
 
 set(CMAKE_CXX_VISIBILITY_PRESET default)
@@ -7,7 +11,6 @@ set(CMAKE_CXX_VISIBILITY_PRESET default)
 set(plasma-volume_SRCS
     modulemanager.cpp
     volumemonitor.cpp
-    debug.cpp
     canberracontext.cpp
     speakertest.cpp
     gsettingsitem.cpp
@@ -22,6 +25,7 @@ set(plasma-volume_SRCS
 
 add_library(plasma-volume
     ${plasma-volume_SRCS}
+    ${plasma-volume_debug_SRCS}
 )
 
 set_target_properties(plasma-volume PROPERTIES
@@ -35,6 +39,7 @@ target_sources(plasma-volume-declarative PRIVATE
     qml/plugin.cpp
     qml/microphoneindicator.cpp
     qml/globalservice.cpp
+    ${plasma-volume_debug_SRCS}
 )
 
 ecm_target_qml_sources(plasma-volume-declarative VERSION 0.1 SOURCES
@@ -99,3 +104,6 @@ install(TARGETS plasma-volume ${KDE_INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELI
 
 add_subdirectory(kcm)
 add_subdirectory(kded)
+
+ecm_qt_install_logging_categories(EXPORT PLASMAPA FILE plasmapa.categories DESTINATION ${KDE_INSTALL_LOGGINGCATEGORIESDIR})
+

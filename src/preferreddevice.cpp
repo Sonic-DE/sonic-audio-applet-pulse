@@ -9,7 +9,7 @@
 #include <PulseAudioQt/Sink>
 #include <PulseAudioQt/Source>
 
-#include "debug.h"
+#include "plasmapa_debug.h"
 
 template<typename D>
 [[nodiscard]] auto findPreferredDevice(QList<D *> devices, D *defaultDevice)
@@ -86,7 +86,7 @@ void PreferredDevice::updatePreferredSink()
     auto sink = findPreferredDevice(PulseAudioQt::Context::instance()->sinks(), PulseAudioQt::Context::instance()->server()->defaultSink());
 
     if (sink != m_sink) {
-        qCDebug(PLASMAPA) << "Changing preferred sink to" << sink << (sink ? sink->name() : "");
+        qCDebug(PLASMAPA_LOG) << "Changing preferred sink to" << sink << (sink ? sink->name() : "");
         m_sink = sink;
         Q_EMIT sinkChanged();
     }
@@ -97,7 +97,7 @@ void PreferredDevice::updatePreferredSource()
     auto source = findPreferredDevice(PulseAudioQt::Context::instance()->sources(), PulseAudioQt::Context::instance()->server()->defaultSource());
 
     if (source != m_source) {
-        qCDebug(PLASMAPA) << "Changing preferred source to" << source << (source ? source->name() : "");
+        qCDebug(PLASMAPA_LOG) << "Changing preferred source to" << source << (source ? source->name() : "");
         m_source = source;
         Q_EMIT sourceChanged();
     }

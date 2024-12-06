@@ -14,7 +14,7 @@
 
 #include <KLocalizedString>
 
-#include "debug.h"
+#include "plasmapa_debug.h"
 
 using namespace std::chrono_literals;
 using namespace Qt::StringLiterals;
@@ -110,7 +110,7 @@ void DeviceRenameSaver::restartWirePlumber()
 
         switch (exitStatus) {
         case QProcess::CrashExit:
-            qCWarning(PLASMAPA) << "Failed to restart wireplumber.service. systemctl crashed!";
+            qCWarning(PLASMAPA_LOG) << "Failed to restart wireplumber.service. systemctl crashed!";
             setError(xi18nc("@info:status error message",
                             "Changes have not been applied.<nl/>"
                             "Failed to restart wireplumber.service. The command crashed."));
@@ -120,7 +120,7 @@ void DeviceRenameSaver::restartWirePlumber()
         }
 
         if (exitCode != 0) {
-            qCWarning(PLASMAPA) << "Failed to restart wireplumber.service. Unexpected exit code" << exitCode;
+            qCWarning(PLASMAPA_LOG) << "Failed to restart wireplumber.service. Unexpected exit code" << exitCode;
             setError(xi18nc("@info:status error message %1 is an integer exit code",
                             "Changes have not been applied.<nl/>"
                             "Failed to restart wireplumber.service. The command terminated with code: %1.",
@@ -233,7 +233,7 @@ bool DeviceRenameSaver::writeOverrides(const QHash<QString, QVariantMap> &overri
             }
         }
 
-        qCWarning(PLASMAPA) << "Unmapped devices!" << unaccepted << "context" << acceptedOverrides << "versus" << overrides.keys();
+        qCWarning(PLASMAPA_LOG) << "Unmapped devices!" << unaccepted << "context" << acceptedOverrides << "versus" << overrides.keys();
         setError(i18nc("@info error %1 is a list of device identifiers", "Failed to handle devices: %1.", unaccepted.join(','_L1)));
         return false;
     }
@@ -246,7 +246,7 @@ bool DeviceRenameSaver::writeOverrides(const QHash<QString, QVariantMap> &overri
 
     if (!QDir(configDir()).exists()) {
         if (!QDir().mkpath(configDir())) {
-            qCWarning(PLASMAPA) << "Failed to create" << configDir();
+            qCWarning(PLASMAPA_LOG) << "Failed to create" << configDir();
             setError(i18nc("@info error %1 is a path", "Failed to create directory: %1.", configDir()));
             return false;
         }
@@ -254,7 +254,7 @@ bool DeviceRenameSaver::writeOverrides(const QHash<QString, QVariantMap> &overri
 
     QFile file(configPath());
     if (!file.open(QFile::WriteOnly | QFile::Truncate)) {
-        qCWarning(PLASMAPA) << "Failed to open file for writing" << file.fileName();
+        qCWarning(PLASMAPA_LOG) << "Failed to open file for writing" << file.fileName();
         setError(i18nc("@info error %1 is a path", "Failed to open file for writing: %1.", file.fileName()));
         return false;
     }

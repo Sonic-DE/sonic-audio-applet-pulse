@@ -23,7 +23,7 @@
 #include <PulseAudioQt/PulseObject>
 #include <PulseAudioQt/Stream>
 
-#include "debug.h"
+#include "plasmapa_debug.h"
 
 using namespace PulseAudioQt;
 
@@ -294,7 +294,7 @@ QMenu *ListItemMenu::createMenu()
     }
 
     if (!m_visualParent || !m_visualParent->window()) {
-        qCWarning(PLASMAPA) << "Cannot prepare menu without visualParent or a window";
+        qCWarning(PLASMAPA_LOG) << "Cannot prepare menu without visualParent or a window";
         return nullptr;
     }
 
@@ -445,7 +445,7 @@ QMenu *ListItemMenu::createMenu()
                     }
                 }
             } else {
-                qCWarning(PLASMAPA) << "Failed to find card at" << device->cardIndex() << "for" << device->description() << device->index();
+                qCWarning(PLASMAPA_LOG) << "Failed to find card at" << device->cardIndex() << "for" << device->description() << device->index();
             }
         }
     }

@@ -3,8 +3,8 @@
 
 #include "devicerenamemodel.h"
 
-#include "debug.h"
 #include "devicerenamesaver.h"
+#include "plasmapa_debug.h"
 
 using namespace Qt::StringLiterals;
 
@@ -72,12 +72,12 @@ bool DeviceRenameModel::setData(const QModelIndex &index, const QVariant &value,
     case Role::HadOverride:
     case Role::Description:
     case Role::Name:
-        qCWarning(PLASMAPA) << "Cannot write to role.";
+        qCWarning(PLASMAPA_LOG) << "Cannot write to role.";
         return false;
     case Role::PulseProperties:
         const auto name = pulseName(index);
         if (name.isEmpty()) {
-            qCWarning(PLASMAPA) << "Name unexpectedly empty. Cannot override" << index;
+            qCWarning(PLASMAPA_LOG) << "Name unexpectedly empty. Cannot override" << index;
             return false;
         }
         beginResetModel();
@@ -150,7 +150,7 @@ void DeviceRenameModel::reset(const QModelIndex &index)
 
     const auto name = pulseName(index);
     if (name.isEmpty()) {
-        qCWarning(PLASMAPA) << "Name unexpectedly empty. Cannot override" << index;
+        qCWarning(PLASMAPA_LOG) << "Name unexpectedly empty. Cannot override" << index;
         return;
     }
 
