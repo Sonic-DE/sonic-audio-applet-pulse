@@ -310,19 +310,38 @@ PlasmoidItem {
                 }
 
                 PC3.ToolButton {
-                    id: globalMuteCheckbox
+                    id: actionsButton
 
                     visible: !(plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
 
-                    icon.name: "audio-volume-muted"
-                    onClicked: {
-                        GlobalService.globalMute()
+                    icon.name: "application-menu"
+                    checkable: true
+                    checked: configMenu.status !== PlasmaExtras.Menu.Closed
+                    display: PlasmaComponents.AbstractButton.IconOnly
+                    onToggled: {
+                        if (checked) {
+                            configMenu.openRelative();
+                        } else {
+                            configMenu.close();
+                        }
                     }
-                    checked: globalMute
 
-                    Accessible.name: i18n("Force mute all playback devices")
+                    Accessible.name: i18n("More actions")
                     PC3.ToolTip {
-                        text: i18n("Force mute all playback devices")
+                        text: i18n("More actions")
+                    }
+                }
+
+                PlasmaExtras.Menu {
+                    id: configMenu
+                    visualParent: actionsButton
+                    placement: PlasmaExtras.Menu.BottomPosedLeftAlignedPopup
+
+                    PlasmaExtras.MenuItem {
+                        action: Plasmoid.contextualActions[0]
+                    }
+                    PlasmaExtras.MenuItem {
+                        action: Plasmoid.contextualActions[1]
                     }
                 }
 
