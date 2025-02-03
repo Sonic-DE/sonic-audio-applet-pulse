@@ -23,6 +23,9 @@ KCM.ScrollViewKCM {
     implicitHeight: Kirigami.Units.gridUnit * 28
     implicitWidth: Kirigami.Units.gridUnit * 28
 
+    OsdInhibitor {
+    }
+
     GlobalConfig {
         id: config
     }

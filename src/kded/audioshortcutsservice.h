@@ -16,6 +16,10 @@
 #include "preferreddevice.h"
 #include "volumefeedback.h"
 
+#include <QDBusContext>
+
+class QDBusServiceWatcher;
+
 namespace PulseAudioQt
 {
 class Device;
@@ -26,11 +30,15 @@ using namespace Qt::Literals::StringLiterals;
 // DEFAULT_SINK_NAME in module-always-sink.c
 constexpr QLatin1String DUMMY_OUTPUT_NAME = "auto_null"_L1;
 
-class AudioShortcutsService : public KDEDModule
+class AudioShortcutsService : public KDEDModule, public QDBusContext
 {
     Q_OBJECT
 public:
     AudioShortcutsService(QObject *parent, const QList<QVariant> &);
+
+public Q_SLOTS:
+    Q_SCRIPTABLE void viewVisible();
+    Q_SCRIPTABLE void viewHidden();
 
 private:
     static qint64 boundVolume(qint64 volume, int maxVolume);
@@ -47,7 +55,9 @@ private:
     void showVolume(int percent);
     void showMicMute(int percent);
     void showMicVolume(int percent);
+    bool showOsd() const;
 
+    std::map<QString, unsigned int> m_views;
     PulseAudioQt::SinkModel *m_sinkModel = nullptr;
     PulseAudioQt::SourceModel *m_sourceModel = nullptr;
     PulseAudioQt::CardModel *m_cardModel = nullptr;
@@ -56,4 +66,5 @@ private:
     VolumeFeedback *m_feedback;
     bool m_hasDefaultSink = false;
     PreferredDevice m_preferredDevice;
+    QDBusServiceWatcher *m_serviceWatcher;
 };
