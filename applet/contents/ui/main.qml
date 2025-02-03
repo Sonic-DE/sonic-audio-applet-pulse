@@ -232,6 +232,12 @@ PlasmoidItem {
     fullRepresentation: PlasmaExtras.Representation {
         id: fullRep
 
+        Loader {
+            sourceComponent: OsdInhibitor {
+            }
+            active: fullRep.Window.active || (main.expanded && !main.hideOnWindowDeactivate)
+        }
+
         Layout.minimumHeight: main.switchHeight
         Layout.minimumWidth: main.switchWidth
         Layout.preferredHeight: Kirigami.Units.gridUnit * 21

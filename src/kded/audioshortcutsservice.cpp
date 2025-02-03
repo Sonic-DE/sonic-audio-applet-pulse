@@ -34,6 +34,7 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     , m_globalConfig(new GlobalConfig(this))
     , m_osdDBusInterface(new OsdServiceInterface(OSD_DBUS_SERVICE, OSD_DBUS_PATH, QDBusConnection::sessionBus(), this))
     , m_feedback(new VolumeFeedback(this))
+    , m_serviceWatcher(new QDBusServiceWatcher(QString(), QDBusConnection::sessionBus(), QDBusServiceWatcher::WatchForUnregistration, this))
 {
     connect(PulseAudioQt::Context::instance()->server(), &PulseAudioQt::Server::defaultSinkChanged, this, &AudioShortcutsService::handleDefaultSinkChange);
     connect(&m_preferredDevice, &PreferredDevice::sinkChanged, this, [this]() {
@@ -50,6 +51,9 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
         });
     });
     connect(m_sinkModel, &PulseAudioQt::SinkModel::rowsInserted, this, &AudioShortcutsService::handleNewSink);
+    connect(m_serviceWatcher, &QDBusServiceWatcher::serviceUnregistered, this, [this](const QString &service) {
+        m_views.erase(service);
+    });
 
     QList<QAction *> actions;
 
@@ -352,7 +356,7 @@ void AudioShortcutsService::playFeedback(int sinkIdx)
 
 void AudioShortcutsService::showMute(int percent)
 {
-    if (!m_globalConfig->muteOsd()) {
+    if (!m_globalConfig->muteOsd() || m_views.size()) {
         return;
     }
     m_osdDBusInterface->volumeChanged(percent, m_globalConfig->raiseMaximumVolume() ? 150 : 100);
@@ -360,7 +364,7 @@ void AudioShortcutsService::showMute(int percent)
 
 void AudioShortcutsService::showVolume(int percent)
 {
-    if (!m_globalConfig->volumeOsd()) {
+    if (!m_globalConfig->volumeOsd() || m_views.size()) {
         return;
     }
     m_osdDBusInterface->volumeChanged(percent, m_globalConfig->raiseMaximumVolume() ? 150 : 100);
@@ -368,7 +372,7 @@ void AudioShortcutsService::showVolume(int percent)
 
 void AudioShortcutsService::showMicVolume(int percent)
 {
-    if (!m_globalConfig->microphoneSensitivityOsd()) {
+    if (!m_globalConfig->microphoneSensitivityOsd() || m_views.size()) {
         return;
     }
     m_osdDBusInterface->microphoneVolumeChanged(percent);
@@ -376,10 +380,29 @@ void AudioShortcutsService::showMicVolume(int percent)
 
 void AudioShortcutsService::showMicMute(int percent)
 {
-    if (!m_globalConfig->muteOsd()) {
+    if (!m_globalConfig->muteOsd() || m_views.size()) {
         return;
     }
     m_osdDBusInterface->microphoneVolumeChanged(percent);
+}
+
+void AudioShortcutsService::viewVisible()
+{
+    const auto sender = message().service();
+    ++m_views[sender];
+    m_serviceWatcher->addWatchedService(sender);
+}
+
+void AudioShortcutsService::viewHidden()
+{
+    const auto sender = message().service();
+    if (auto it = m_views.find(sender); it != m_views.end()) {
+        unsigned int &views = it->second;
+        if (--views == 0) {
+            m_serviceWatcher->removeWatchedService(sender);
+            m_views.erase(it);
+        }
+    }
 }
 
 #include "audioshortcutsservice.moc"

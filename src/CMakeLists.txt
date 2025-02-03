@@ -37,6 +37,7 @@ target_sources(plasma-volume-declarative PRIVATE
     qml/plugin.cpp qml/plugin.h
     qml/microphoneindicator.cpp qml/microphoneindicator.h
     qml/globalservice.cpp qml/globalservice.h
+    qml/osdinhibitor.h
 )
 
 ecm_target_qml_sources(plasma-volume-declarative VERSION 0.1 SOURCES
