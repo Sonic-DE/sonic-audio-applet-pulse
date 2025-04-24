@@ -239,6 +239,7 @@ PC3.ItemDelegate {
                     function increase() { value = value + myStepSize }
                     function decrease() { value = value - myStepSize }
                     onMoved: {
+                        console.error("New volume is ", value)
                         item.model.Volume = value;
                         item.model.Muted = value === 0;
                     }
