@@ -24,6 +24,7 @@ from gi.repository import Gdk
 
 WIDGET_ID: Final = "org.kde.plasma.volume"
 
+
 class SetValueCommand(ExtensionBase):
 
     def method_name(self):
@@ -105,14 +106,16 @@ class AppletTest(unittest.TestCase):
         self.driver.find_element(AppiumBy.NAME, description)
 
         # Raise the maximum volume
-        self.driver.find_element(AppiumBy.NAME, "Raise maximum volume").click()
+        wait = WebDriverWait(self.driver, 30)
+        switch_element = self.driver.find_element(AppiumBy.NAME, "Raise maximum volume")
+        switch_element.click()
+        print(self.driver.page_source, file=sys.stderr, flush=True)
+        wait.until(EC.presence_of_element_located((AppiumBy.XPATH, "//*[@name='Raise maximum volume' and contains(@states, 'checked')]")))
         slider_element: WebElement = self.driver.find_element(AppiumBy.NAME, f"Adjust volume for {description}")
         self.driver.set_value(slider_element, str(int(0x10000 * 1.5)))  # PA_VOLUME_NORM * 1.5
         slider_element.click()
-        wait = WebDriverWait(self.driver, 30)
         wait.until(EC.presence_of_element_located((AppiumBy.NAME, "150%")))
         time.sleep(1)
-
         self.assertIn("150%", subprocess.check_output(["pactl", "list", "sinks"]).decode(encoding="utf-8"))
 
 
