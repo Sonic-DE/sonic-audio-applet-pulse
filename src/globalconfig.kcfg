@@ -46,8 +46,9 @@
             <label>Mute all audio.</label>
             <default>false</default>
         </entry>
+        <!-- TODO: config upgrade: must clear list and probably disable GlobalMute -->
         <entry name="GlobalMuteDevices" type="StringList">
-            <label>Devices that were not muted with global mute, and will remain muted afterwards.</label>
+            <label>Devices that were muted by global mute, and should be unmuted when global mute is applied.</label>
         </entry>
     </group>
 </kcfg>
