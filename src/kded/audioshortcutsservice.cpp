@@ -53,6 +53,8 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     }
 
     connect(PulseAudioQt::Context::instance()->server(), &PulseAudioQt::Server::defaultSinkChanged, this, &AudioShortcutsService::handleDefaultSinkChange);
+    // TODO: This seems strange — why connect? surely we just want to show that initial volume only, rather than every time volume changes
+    // which is handled when we actually change volume & would persist after the sink is changed away?
     connect(&m_preferredDevice, &PreferredDevice::sinkChanged, this, [this]() {
         auto sink = m_preferredDevice.sink();
         if (!sink) {
@@ -309,14 +311,51 @@ void AudioShortcutsService::handleDefaultSinkChange()
     m_osdDBusInterface->showText(icon, description);
 }
 
-void AudioShortcutsService::handleNewSink()
+void AudioShortcutsService::handleNewSink(const QModelIndex &parent, int first, int last)
 {
-    if (m_globalConfig->globalMute()) {
-        for (int i = 0; i < m_sinkModel->rowCount(); i++) {
-            m_sinkModel->setData(m_sinkModel->index(i, 0), true, m_sinkModel->role("Muted"_ba));
+    Q_UNUSED(parent)
+
+    QStringList globalMuteDevices = m_globalConfig->globalMuteDevices();
+    const bool globalMute = m_globalConfig->globalMute();
+
+    for (int i = first; i < last; ++i) {
+        const auto idx = m_sinkModel->index(i, 0);
+
+        if (globalMute) {
+            // We're globally muting so check if we need to mute this sink
+            const bool isUnmuted = m_sinkModel->data(idx, m_sinkModel->role("Muted"_ba)).toBool();
+            if (isUnmuted) {
+                const QString name = m_sinkModel->data(idx, m_sinkModel->role("Name"_ba)).toString();
+                const QString activePortIdx = QString::number(m_sinkModel->data(idx, m_sinkModel->role("ActivePortIndex"_ba)).toUInt());
+                const QString deviceId = name % "." % activePortIdx;
+                globalMuteDevices.append(deviceId);
+
+                m_sinkModel->setData(idx, true, m_sinkModel->role("Muted"_ba));
+            }
+        } else {
+            // Check if we need to unmute this sink from a previous global mute
+            const QString name = m_sinkModel->data(idx, m_sinkModel->role("Name"_ba)).toString();
+            const QString activePortIdx = QString::number(m_sinkModel->data(idx, m_sinkModel->role("ActivePortIndex"_ba)).toUInt());
+            const QString deviceId = name % "." % activePortIdx;
+
+            if (globalMuteDevices.removeAll(deviceId)) {
+                m_sinkModel->setData(idx, false, m_sinkModel->role("Muted"_ba));
+            }
         }
     }
+
+    m_globalConfig->setGlobalMuteDevices(globalMuteDevices);
+    m_globalConfig->save();
 }
+
+// TODO: Deduplicate logic
+
+// TODO: Handle sink port changed!
+// TODO: Handle sink muted changed (should break global mute)
+// TODO: Handle sink volume changed (should break global mute)
+// Can use dataChanged?
+
+// TODO: Remove global mute handling from applet code
 
 void AudioShortcutsService::muteVolume()
 {
@@ -339,22 +378,23 @@ void AudioShortcutsService::muteVolume()
 
 void AudioShortcutsService::enableGlobalMute()
 {
-    QStringList alreadyMutedDevices;
-    for (int i = 0; i < m_sinkModel->rowCount(); i++) {
+    QStringList globalMuteDevices = m_globalConfig->globalMuteDevices();
+    for (int i = 0; i < m_sinkModel->rowCount(); ++i) {
         const auto idx = m_sinkModel->index(i, 0);
-        const bool isAlreadyMuted = m_sinkModel->data(idx, m_sinkModel->role("Muted"_ba)).toBool();
-        const QString name = m_sinkModel->data(idx, m_sinkModel->role("Name"_ba)).toString();
-        const QString activePortIdx = QString::number(m_sinkModel->data(idx, m_sinkModel->role("ActivePortIndex"_ba)).toUInt());
-        if (isAlreadyMuted) {
-            alreadyMutedDevices.append(name % "." % activePortIdx);
-        } else {
+
+        const bool isUnmuted = m_sinkModel->data(idx, m_sinkModel->role("Muted"_ba)).toBool();
+        if (isUnmuted) {
+            // Mute this device, but remember we were responsible for muting it
+            const QString name = m_sinkModel->data(idx, m_sinkModel->role("Name"_ba)).toString();
+            const QString activePortIdx = QString::number(m_sinkModel->data(idx, m_sinkModel->role("ActivePortIndex"_ba)).toUInt());
+            const QString deviceId = name % "." % activePortIdx;
+            globalMuteDevices.append(deviceId);
+
             m_sinkModel->setData(idx, true, m_sinkModel->role("Muted"_ba));
         }
     }
-    if (alreadyMutedDevices.length() == m_sinkModel->rowCount()) {
-        alreadyMutedDevices.clear();
-    }
-    m_globalConfig->setGlobalMuteDevices(alreadyMutedDevices);
+
+    m_globalConfig->setGlobalMuteDevices(globalMuteDevices);
     m_globalConfig->setGlobalMute(true);
     m_globalConfig->save();
     showMute(0);
@@ -362,20 +402,24 @@ void AudioShortcutsService::enableGlobalMute()
 
 void AudioShortcutsService::disableGlobalMute()
 {
-    QStringList keepMutedDevices = m_globalConfig->globalMuteDevices();
-    for (int i = 0; i < m_sinkModel->rowCount(); i++) {
+    QStringList globalMuteDevices = m_globalConfig->globalMuteDevices();
+    for (int i = 0; i < m_sinkModel->rowCount(); ++i) {
         const auto idx = m_sinkModel->index(i, 0);
+
         const QString name = m_sinkModel->data(idx, m_sinkModel->role("Name"_ba)).toString();
         const QString activePortIdx = QString::number(m_sinkModel->data(idx, m_sinkModel->role("ActivePortIndex"_ba)).toUInt());
         const QString deviceId = name % "." % activePortIdx;
-        if (!keepMutedDevices.contains(deviceId)) {
+        if (globalMuteDevices.removeAll(deviceId)) {
+            // We were responsible for muting this device, so unmute it
             m_sinkModel->setData(idx, false, m_sinkModel->role("Muted"_ba));
         }
     }
+
+    m_globalConfig->setGlobalMuteDevices(globalMuteDevices);
     m_globalConfig->setGlobalMute(false);
-    m_globalConfig->setGlobalMuteDevices({});
     m_globalConfig->save();
-    auto sink = m_preferredDevice.sink();
+
+    const auto sink = m_preferredDevice.sink();
     if (sink) {
         showMute(volumePercent(sink->volume()));
         playFeedback(-1);

@@ -43,7 +43,7 @@ private:
     static int volumePercent(qint64 volume);
     int changeVolumePercent(PulseAudioQt::Device *device, int deltaPercent);
     void handleDefaultSinkChange();
-    void handleNewSink();
+    void handleNewSink(const QModelIndex &parent, int first, int last);
     void muteVolume();
     void enableGlobalMute();
     void disableGlobalMute();
