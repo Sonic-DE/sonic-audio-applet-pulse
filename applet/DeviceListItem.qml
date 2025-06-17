@@ -32,18 +32,4 @@ ListItemBase {
 
         return nodeName(model.PulseObject)
     }
-
-    onActivePortIndexChanged: {
-        if (type === "sink" && globalMute && !model.Muted) {
-            model.Muted = true;
-        }
-    }
-
-    onMutedChanged: {
-        if (type === "sink" && globalMute && !model.Muted) {
-            config.globalMute = false;
-            config.globalMuteDevices = [];
-            config.save();
-        }
-    }
 }
