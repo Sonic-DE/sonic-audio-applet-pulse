@@ -223,7 +223,7 @@ PlasmoidItem {
             if (mouse.button == Qt.LeftButton) {
                 wasExpanded = main.expanded;
             } else if (mouse.button == Qt.MiddleButton) {
-                GlobalService.globalMuteSinks();
+                GlobalService.toggleMuteSinks();
             }
         }
         onClicked: mouse => {

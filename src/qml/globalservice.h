@@ -17,6 +17,8 @@ class GlobalService : public QObject
 public Q_SLOTS:
     static void globalMuteSinks();
     static void globalMuteSources();
+    static void toggleMuteSinks();
+    static void toggleMuteSources();
     static void volumeUp();
     static void volumeDown();
     static void volumeUpSmall();
