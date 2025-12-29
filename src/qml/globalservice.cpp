@@ -17,10 +17,20 @@ constexpr QLatin1String OSD_DBUS_PATH = "/org/kde/osdService"_L1;
 
 void GlobalService::globalMuteSinks()
 {
-    invokeShortcut(u"mute"_s);
+    invokeShortcut(u"global_mute"_s);
 }
 
 void GlobalService::globalMuteSources()
+{
+    invokeShortcut(u"global_mic_mute"_s);
+}
+
+void GlobalService::toggleMuteSinks()
+{
+    invokeShortcut(u"mute"_s);
+}
+
+void GlobalService::toggleMuteSources()
 {
     invokeShortcut(u"mic_mute"_s);
 }

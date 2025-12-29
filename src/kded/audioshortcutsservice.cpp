@@ -170,10 +170,19 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     muteAction->setText(i18n("Mute"));
     muteAction->setShortcut(Qt::Key_VolumeMute);
     connect(muteAction, &QAction::triggered, this, [this]() {
+        auto defSink = PulseAudioQt::Context::instance()->server()->defaultSink();
         if (m_globalConfig->globalMuteSinks()) {
             disableGlobalSinkMute();
+
+            if (defSink && defSink->isMuted()) {
+                defSink->setMuted(false);
+            }
         } else {
-            enableGlobalSinkMute();
+            if (defSink && defSink->isMuted()) {
+                defSink->setMuted(false);
+            } else {
+                enableGlobalSinkMute();
+            }
         }
     });
 
@@ -183,6 +192,42 @@ AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVaria
     muteMicAction->setText(i18n("Mute Microphone"));
     muteMicAction->setShortcuts({Qt::Key_MicMute, Qt::MetaModifier | Qt::Key_VolumeMute});
     connect(muteMicAction, &QAction::triggered, this, [this]() {
+        auto defSource = PulseAudioQt::Context::instance()->server()->defaultSource();
+        if (m_globalConfig->globalMuteSources()) {
+            disableGlobalSourceMute();
+
+            if (defSource && defSource->isMuted()) {
+                defSource->setMuted(false);
+            }
+        } else {
+            if (defSource && defSource->isMuted()) {
+                defSource->setMuted(false);
+            } else {
+                enableGlobalSourceMute();
+            }
+        }
+    });
+
+    // We have a separate global mute action for applet's "Force mute" actions
+    // while the regular mute and mic_mute actions try to unmute based on the mute state
+    // of the primary devices
+    QAction *globalMuteAction = new QAction(this);
+    actions.append(globalMuteAction);
+    globalMuteAction->setObjectName(u"global_mute"_s);
+    globalMuteAction->setText(i18n("Force Mute All Playback Devices"));
+    connect(globalMuteAction, &QAction::triggered, this, [this]() {
+        if (m_globalConfig->globalMuteSinks()) {
+            disableGlobalSinkMute();
+        } else {
+            enableGlobalSinkMute();
+        }
+    });
+
+    QAction *globalMuteMicAction = new QAction(this);
+    actions.append(globalMuteMicAction);
+    globalMuteMicAction->setObjectName(u"global_mic_mute"_s);
+    globalMuteMicAction->setText(i18n("Force Mute All Input Devices"));
+    connect(globalMuteMicAction, &QAction::triggered, this, [this]() {
         if (m_globalConfig->globalMuteSources()) {
             disableGlobalSourceMute();
         } else {
