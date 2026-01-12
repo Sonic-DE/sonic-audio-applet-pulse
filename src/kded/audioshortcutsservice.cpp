@@ -232,7 +232,11 @@ int AudioShortcutsService::changeVolumePercent(PulseAudioQt::Device *device, int
     const int maxVolume = PulseAudioQt::normalVolume() * (m_globalConfig->raiseMaximumVolume() ? 150 : 100) / 100.0;
     const qint64 newVolume = boundVolume(std::round(PulseAudioQt::normalVolume() * (targetPercent / 100.f)), maxVolume);
     const int newPercent = volumePercent(newVolume);
-    device->setMuted(newPercent == 0);
+    if (deltaPercent > 0) {
+        device->setMuted(false);
+    } else if (newPercent == 0) {
+        device->setMuted(true);
+    }
     device->setVolume(newVolume);
     return newPercent;
 }
