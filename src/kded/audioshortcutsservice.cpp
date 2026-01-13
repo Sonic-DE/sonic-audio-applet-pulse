@@ -7,6 +7,9 @@
 
 #include "audioicon.h"
 
+#include <chrono>
+#include <optional>
+
 #include <QAction>
 #include <QDBusConnection>
 #include <QDBusMessage>
@@ -22,6 +25,9 @@
 #include <PulseAudioQt/Sink>
 #include <PulseAudioQt/Source>
 
+#include <QCoroDBusPendingCall>
+#include <QCoroTimer>
+
 #include "mutedmicrophonereminder.h"
 #include "preferreddevice.h"
 
@@ -29,6 +35,8 @@ K_PLUGIN_CLASS_WITH_JSON(AudioShortcutsService, "audioshortcutsservice.json")
 
 constexpr QLatin1String OSD_DBUS_SERVICE = "org.kde.plasmashell"_L1;
 constexpr QLatin1String OSD_DBUS_PATH = "/org/kde/osdService"_L1;
+
+using namespace std::literals::chrono_literals;
 
 AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVariant> &)
     : KDEDModule(parent)
@@ -237,7 +245,7 @@ int AudioShortcutsService::changeVolumePercent(PulseAudioQt::Device *device, int
     return newPercent;
 }
 
-void AudioShortcutsService::handleDefaultSinkChange()
+QCoro::Task<> AudioShortcutsService::handleDefaultSinkChange()
 {
     const PulseAudioQt::Sink *defaultSink = PulseAudioQt::Context::instance()->server()->defaultSink();
 
@@ -246,15 +254,20 @@ void AudioShortcutsService::handleDefaultSinkChange()
     m_hasDefaultSink = (defaultSink != nullptr);
 
     if (!m_globalConfig->defaultOutputDeviceOsd()) {
-        return;
+        co_return;
     }
 
     if (!hadDefaultSink || !defaultSink) {
-        return;
+        co_return;
     }
+
+    // Could be cone after co_await.
+    QPointer<OsdServiceInterface> osd = m_osdDBusInterface;
 
     QString icon = AudioIcon::forFormFactor(defaultSink->formFactor());
     QString description = nameForDevice(defaultSink);
+    std::optional<int> batteryPercentage;
+
     if (defaultSink->name() == DUMMY_OUTPUT_NAME) {
         description = i18n("No output device");
         if (icon.isEmpty()) {
@@ -277,7 +290,7 @@ void AudioShortcutsService::handleDefaultSinkChange()
             bool convOk = false;
             const int cardBluetoothBattery = cardProperties[u"bluetooth.battery"_s].toString().remove('%').toInt(&convOk);
             if (convOk) {
-                description = i18nc("Device name (Battery percent)", "%1 (%2% Battery)", description, cardBluetoothBattery);
+                batteryPercentage = cardBluetoothBattery;
             } else {
                 // Ask Bluez, if it is a bluetooth device.
                 const QString bluezPath = cardProperties[u"api.bluez5.path"_s].toString();
@@ -285,32 +298,41 @@ void AudioShortcutsService::handleDefaultSinkChange()
                     QDBusMessage batteryMessage = QDBusMessage::createMethodCall(u"org.bluez"_s, bluezPath, u"org.freedesktop.DBus.Properties"_s, u"Get"_s);
                     batteryMessage.setArguments({u"org.bluez.Battery1"_s, u"Percentage"_s});
 
-                    auto reply = QDBusConnection::systemBus().asyncCall(batteryMessage);
-                    auto *watcher = new QDBusPendingCallWatcher(reply, this);
-                    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, watcher, icon, description] {
-                        QDBusPendingReply<QDBusVariant> reply = *watcher;
+                    QDBusReply<QDBusVariant> reply = co_await QDBusConnection::sessionBus().asyncCall(batteryMessage);
 
-                        QString newDescription = description;
+                    // The interface might not be there yet by the time we query it when it was only just connected.
+                    // InvalidArgs "No such interface 'org.bluez.Battery1'"
+                    if (reply.error().type() == QDBusError::InvalidArgs) {
+                        co_await QCoro::sleepFor(1s);
 
-                        if (!reply.isError()) {
-                            bool ok;
-                            // NOTE "Percentage" on org.bluez.Battery1 is of type Byte (y).
-                            const int percentage = reply.value().variant().toInt(&ok);
-                            if (ok) {
-                                newDescription = i18nc("Device name (Battery percent)", "%1 (%2% Battery)", description, percentage);
-                            }
+                        reply = co_await QDBusConnection::systemBus().asyncCall(batteryMessage);
+                    }
+
+                    if (reply.isValid()) {
+                        bool ok;
+                        // NOTE "Percentage" on org.bluez.Battery1 is of type Byte (y).
+                        const int percentage = reply.value().variant().toInt(&ok);
+                        if (ok) {
+                            batteryPercentage = percentage;
                         }
-
-                        m_osdDBusInterface->showText(icon, newDescription);
-                        watcher->deleteLater();
-                    });
-                    return;
+                    }
                 }
             }
         }
     }
 
-    m_osdDBusInterface->showText(icon, description);
+    // By the time we did all of the battery DBus stuff above, the output might have already changed...
+    if (defaultSink != PulseAudioQt::Context::instance()->server()->defaultSink()) {
+        co_return;
+    }
+
+    if (batteryPercentage.has_value()) {
+        description = i18nc("Device name (Battery percent)", "%1 (%2% Battery)", description, batteryPercentage.value());
+    }
+
+    if (osd) {
+        osd->showText(icon, description);
+    }
 }
 
 void AudioShortcutsService::muteVolume()
