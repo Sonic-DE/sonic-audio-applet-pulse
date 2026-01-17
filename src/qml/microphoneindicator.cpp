@@ -186,6 +186,7 @@ void MicrophoneIndicator::setMuted(bool muted)
                 continue;
             }
         }
+        m_sourceModel->defaultSource()->setMuted(true);
         return;
     }
 
@@ -194,6 +195,7 @@ void MicrophoneIndicator::setMuted(bool muted)
         for (int i = 0; i < m_sourceModel->rowCount(); ++i) {
             m_sourceModel->setData(m_sourceModel->index(i), false, s_mutedRole);
         }
+        m_sourceModel->defaultSource()->setMuted(false);
         return;
     }
 
@@ -205,6 +207,7 @@ void MicrophoneIndicator::setMuted(bool muted)
         m_sourceModel->setData(idx, false, s_mutedRole);
     }
     m_mutedIndices.clear();
+    m_sourceModel->defaultSource()->setMuted(false);
 
     // no update() needed as the model signals a change
 }
