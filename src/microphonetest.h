@@ -6,6 +6,8 @@
 
 #include <QTimer>
 #include <QByteArray>
+#include <QPointer>
+#include <pulse/introspect.h>
 #include <pulse/stream.h>
 #include <PulseAudioQt/Source>
 
@@ -48,15 +50,25 @@ Q_SIGNALS:
     void recordingChanged();
 
 private:
+    friend class MicrophoneLifecycleTest;
+
     void calculateVolumeLevel(const void *data, size_t nbytes);
+
+    void beginRecording(uint32_t sampleRate);
+    void cancelSourceInfoOperation();
 
     static void stream_state_callback(pa_stream *s, void *userdata);
     static void stream_read_callback(pa_stream *s, size_t nbytes, void *userdata);
     static void stream_write_callback(pa_stream *s, size_t nbytes, void *userdata);
+    static void source_info_callback(pa_context *c, const pa_source_info *i, int eol, void *userdata);
 
-    PulseAudioQt::Source *m_source = nullptr;
+    QPointer<PulseAudioQt::Source> m_source;
+    pa_operation *m_sourceInfoOperation = nullptr;
     pa_stream *m_recordStream = nullptr;
     pa_stream *m_playbackStream = nullptr;
+
+    uint32_t m_sampleRate = 44100;
+    uint32_t m_pendingSampleRate = 44100;
 
     QByteArray m_recordedData;
     size_t m_playbackOffset = 0;
