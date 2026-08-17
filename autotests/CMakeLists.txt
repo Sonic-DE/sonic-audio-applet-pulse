@@ -12,3 +12,11 @@ ecm_add_test(
     TEST_NAME percentvalidatortest
     LINK_LIBRARIES Qt6::Test Qt6::Gui plasma-volume
 )
+
+ecm_add_test(
+    microphonelifecycletest.cpp
+    ../src/microphonetest.cpp
+    TEST_NAME microphonelifecycletest
+    LINK_LIBRARIES Qt6::Test KF6::PulseAudioQt KF6::I18n PkgConfig::LIBPULSE
+)
+target_include_directories(microphonelifecycletest PRIVATE ../src)
