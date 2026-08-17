@@ -8,13 +8,13 @@
 #include <PulseAudioQt/Context>
 #include <cmath>
 #include <pulse/error.h>
+#include <pulse/operation.h>
 #include <chrono>
 #include <pulse/volume.h>
 #include <KLocalizedString>
 
 namespace
 {
-    constexpr int SAMPLE_RATE = 44100;
     constexpr std::chrono::milliseconds MAX_RECORD_DURATION{10000};
     constexpr int MIN_FRAGMENT_SIZE = 256;
 }
@@ -72,7 +72,8 @@ bool MicrophoneTest::playing() const
 
 bool MicrophoneTest::recording() const
 {
-    return m_recording;
+    // Treat the asynchronous source lookup as recording so the UI can stop it.
+    return m_recording || m_sourceInfoOperation;
 }
 
 void MicrophoneTest::calculateVolumeLevel(const void *data, size_t nbytes)
@@ -97,6 +98,67 @@ void MicrophoneTest::calculateVolumeLevel(const void *data, size_t nbytes)
 
 void MicrophoneTest::startRecording()
 {
+    if (recording() || !m_source || m_playing) {
+        return;
+    }
+
+    auto pa_ctx = PulseAudioQt::Context::instance()->context();
+    if (!pa_ctx || pa_context_get_state(pa_ctx) != PA_CONTEXT_READY) {
+        Q_EMIT showErrorMessage(i18n("PulseAudio context is not ready"));
+        return;
+    }
+
+    // Query the source's native sample rate first, so we don't force
+    // PipeWire/PulseAudio to switch the whole audio graph's clock rate to a
+    // fixed value (e.g. always 44.1 kHz) when the device is actually
+    // running at a different rate (e.g. 48 kHz).
+    m_pendingSampleRate = 44100;
+    m_sourceInfoOperation = pa_context_get_source_info_by_name(pa_ctx, m_source->name().toUtf8().constData(), source_info_callback, this);
+    if (m_sourceInfoOperation) {
+        Q_EMIT recordingChanged();
+    } else {
+        // Couldn't query the source info; fall back to the default sample rate.
+        beginRecording(m_pendingSampleRate);
+    }
+}
+
+void MicrophoneTest::source_info_callback(pa_context *c, const pa_source_info *i, int eol, void *userdata)
+{
+    Q_UNUSED(c)
+
+    auto *self = static_cast<MicrophoneTest *>(userdata);
+    if (!self || !self->m_sourceInfoOperation) {
+        return;
+    }
+
+    if (!eol) {
+        if (i && pa_sample_rate_valid(i->sample_spec.rate)) {
+            self->m_pendingSampleRate = i->sample_spec.rate;
+        }
+        return;
+    }
+
+    // Also complete the request on an asynchronous error (eol < 0).
+    pa_operation_unref(self->m_sourceInfoOperation);
+    self->m_sourceInfoOperation = nullptr;
+    self->beginRecording(self->m_pendingSampleRate);
+    if (!self->m_recording) {
+        Q_EMIT self->recordingChanged();
+    }
+}
+
+void MicrophoneTest::cancelSourceInfoOperation()
+{
+    if (m_sourceInfoOperation) {
+        // Unref alone does not disable callbacks using this object as userdata.
+        pa_operation_cancel(m_sourceInfoOperation);
+        pa_operation_unref(m_sourceInfoOperation);
+        m_sourceInfoOperation = nullptr;
+    }
+}
+
+void MicrophoneTest::beginRecording(uint32_t sampleRate)
+{
     if (m_recording || !m_source || m_playing) {
         return;
     }
@@ -107,7 +169,7 @@ void MicrophoneTest::startRecording()
         return;
     }
 
-    pa_sample_spec ss = {PA_SAMPLE_S16LE, SAMPLE_RATE, 1};
+    pa_sample_spec ss = {PA_SAMPLE_S16LE, sampleRate, 1};
 
     m_recordStream = pa_stream_new(pa_ctx, "MicTest-Record", &ss, nullptr);
     if (!m_recordStream) {
@@ -133,6 +195,8 @@ void MicrophoneTest::startRecording()
         return;
     }
 
+    // Keep the old recording's rate if setting up the new stream fails.
+    m_sampleRate = sampleRate;
     m_recordedData.clear();
     m_playbackOffset = 0;
     m_manualStop = false;
@@ -147,6 +211,7 @@ void MicrophoneTest::startRecording()
 
 void MicrophoneTest::stopRecording()
 {
+    cancelSourceInfoOperation();
     m_manualStop = true;
 
     if (m_autoStopTimer.isActive()) {
@@ -208,7 +273,7 @@ void MicrophoneTest::stopRecording()
 
 void MicrophoneTest::playRecording()
 {
-    if (m_recording || m_playing || m_recordedData.isEmpty()) {
+    if (recording() || m_playing || m_recordedData.isEmpty()) {
         return;
     }
 
@@ -218,7 +283,7 @@ void MicrophoneTest::playRecording()
         return;
     }
 
-    pa_sample_spec ss = {PA_SAMPLE_S16LE, SAMPLE_RATE, 1};
+    pa_sample_spec ss = {PA_SAMPLE_S16LE, static_cast<uint32_t>(m_sampleRate), 1};
 
     m_playbackOffset = 0;
 
@@ -271,6 +336,10 @@ void MicrophoneTest::stopPlaying()
 
 void MicrophoneTest::clearRecording()
 {
+    if (m_sourceInfoOperation) {
+        cancelSourceInfoOperation();
+        Q_EMIT recordingChanged();
+    }
     m_recordedData.clear();
     m_playbackOffset = 0;
     m_volumeLevel = 0.0;
@@ -280,8 +349,10 @@ void MicrophoneTest::clearRecording()
 
 void MicrophoneTest::cleanupStreams()
 {
-    const bool wasRecording = m_recording;
+    const bool wasRecording = recording();
     const bool wasPlaying = m_playing;
+
+    cancelSourceInfoOperation();
 
     if (m_recordStream) {
         pa_stream_disconnect(m_recordStream);
