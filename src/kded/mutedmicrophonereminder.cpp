@@ -16,8 +16,8 @@
 
 using namespace Qt::StringLiterals;
 
-constexpr QLatin1String OSD_DBUS_SERVICE = "org.kde.plasmashell"_L1;
-constexpr QLatin1String OSD_DBUS_PATH = "/org/kde/osdService"_L1;
+constexpr QLatin1String OSD_DBUS_SERVICE = "org.sonicde.sonicshell"_L1;
+constexpr QLatin1String OSD_DBUS_PATH = "/org/sonicde/osdService"_L1;
 
 MutedMicrophoneReminder::MutedMicrophoneReminder(QObject *parent)
     : QObject(parent)

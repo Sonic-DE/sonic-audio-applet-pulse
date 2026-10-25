@@ -26,8 +26,8 @@
 using namespace PulseAudioQt;
 using namespace Qt::Literals::StringLiterals;
 
-constexpr QLatin1String OSD_DBUS_SERVICE = "org.kde.plasmashell"_L1;
-constexpr QLatin1String OSD_DBUS_PATH = "/org/kde/osdService"_L1;
+constexpr QLatin1String OSD_DBUS_SERVICE = "org.sonicde.sonicshell"_L1;
+constexpr QLatin1String OSD_DBUS_PATH = "/org/sonicde/osdService"_L1;
 
 MicrophoneIndicator::MicrophoneIndicator(QObject *parent)
     : QObject(parent)

@@ -1,7 +1,7 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
-  <interface name="org.kde.osdService">
+  <interface name="org.sonicde.osdService">
     <signal name="osdProgress">
       <arg name="icon" type="s" direction="out"/>
       <arg name="percent" type="i" direction="out"/>
@@ -45,4 +45,3 @@
     <method name="hide" />
   </interface>
 </node>
-

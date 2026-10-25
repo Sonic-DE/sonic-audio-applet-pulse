@@ -27,8 +27,8 @@
 
 K_PLUGIN_CLASS_WITH_JSON(AudioShortcutsService, "audioshortcutsservice.json")
 
-constexpr QLatin1String OSD_DBUS_SERVICE = "org.kde.plasmashell"_L1;
-constexpr QLatin1String OSD_DBUS_PATH = "/org/kde/osdService"_L1;
+constexpr QLatin1String OSD_DBUS_SERVICE = "org.sonicde.sonicshell"_L1;
+constexpr QLatin1String OSD_DBUS_PATH = "/org/sonicde/osdService"_L1;
 
 AudioShortcutsService::AudioShortcutsService(QObject *parent, const QList<QVariant> &)
     : KDEDModule(parent)
