@@ -2,9 +2,10 @@
 
 Sonic Audio Applet Pulse is SonicDE's volume control, letting you adjust sound, switch speakers and headphones, and manage your microphone from the panel.
 
-## Unreleased
+## 6.8.2 (2026-11-10)
 
 - Volume and microphone pop-ups, including the muted-microphone reminder, now appear through the SonicDE shell.
+- Behind the scenes: removed automated tests that need Wayland.
 
 ## 6.8.0 (2026-10-20)
 
